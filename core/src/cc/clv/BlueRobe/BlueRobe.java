@@ -80,8 +80,9 @@ public class BlueRobe extends ApplicationAdapter {
 	private void doneLoading() {
 		Model character = assetManager.get("models/hikari.g3db", Model.class);
 		ModelInstance characterInstance = new ModelInstance(character);
-        characterInstance.transform.setToTranslation(0f, 0f, 80f);
-        instances.add(characterInstance);
+		characterInstance.transform.translate(0f, 0f, 80f);
+		characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
+		instances.add(characterInstance);
 
 		float tileSize = 10.0f;
 		for (int z = -numTileVertical / 2; z < numTileVertical / 2; z++) {
@@ -92,7 +93,8 @@ public class BlueRobe extends ApplicationAdapter {
 
 				Model item = assetManager.get("models/mushroom.g3db", Model.class);
 				ModelInstance itemInstance = new ModelInstance(item);
-				itemInstance.transform.setToTranslationAndScaling(x * tileSize + tileSize / 2, 0, z * tileSize + tileSize / 2, 0.4f, 0.4f, 0.4f);
+				itemInstance.transform.translate(x * tileSize + tileSize / 2, 0, z * tileSize + tileSize / 2);
+				itemInstance.transform.scale(0.4f, 0.4f, 0.4f);
 				instances.add(itemInstance);
 
 				AnimationController animationController = new AnimationController(itemInstance);
