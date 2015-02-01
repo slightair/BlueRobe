@@ -27,8 +27,9 @@ public class BlueRobe extends ApplicationAdapter {
     public Array<ModelInstance> instances = new Array<ModelInstance>();
     public Array<AnimationController> animationControllers = new Array<AnimationController>();
     public boolean loading;
-    public int numTileHorizontal = 12;
-    public int numTileVertical = 40;
+    public int numTileHorizontal = 9;
+    public int numTileVertical = 24;
+    private float tileSize = 16.0f;
 
     @Override
     public void create() {
@@ -40,10 +41,10 @@ public class BlueRobe extends ApplicationAdapter {
         shadowLight.set(directionalLight);
         environment.shadowMap = shadowLight;
 
-        float viewportSize = 96.0f;
+        float viewportSize = 128.0f;
         float aspectRatio = Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
         camera = new OrthographicCamera(viewportSize, viewportSize * 2 * aspectRatio);
-        camera.position.set(camera.viewportWidth * 0.15f, viewportSize * 0.5f, camera.viewportHeight * 0.3f);
+        camera.position.set(camera.viewportWidth * 0.15f, camera.viewportHeight * 0.5f, camera.viewportHeight * 0.3f);
         camera.lookAt(0, 0, 0);
         camera.near = -100f;
         camera.far = 300f;
@@ -54,7 +55,6 @@ public class BlueRobe extends ApplicationAdapter {
         assetManager.load("models/mushroom.g3db", Model.class);
         loading = true;
 
-        float tileSize = 10.0f;
         float tileHeight = 30.0f;
         ModelBuilder modelBuilder = new ModelBuilder();
         Model whiteGround = modelBuilder.createBox(tileSize, tileHeight, tileSize,
@@ -64,11 +64,13 @@ public class BlueRobe extends ApplicationAdapter {
                 new Material(ColorAttribute.createDiffuse(Color.LIGHT_GRAY)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
-        for (int z = -numTileVertical / 2; z < numTileVertical / 2; z++) {
-            for (int x = -numTileHorizontal / 2; x < numTileHorizontal / 2; x++) {
+        int numTileVerticalHalf = numTileVertical / 2;
+        int numTileHorizontalHalf = numTileHorizontal / 2;
+        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
+            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
                 Model model = (x + z % 2) % 2 == 0 ? whiteGround : grayGround;
                 ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x * tileSize + tileSize / 2, -tileHeight / 2, z * tileSize + tileSize / 2);
+                instance.transform.translate(x * tileSize, -tileHeight / 2, z * tileSize);
                 instances.add(instance);
             }
         }
@@ -84,16 +86,18 @@ public class BlueRobe extends ApplicationAdapter {
         characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
         instances.add(characterInstance);
 
-        float tileSize = 10.0f;
-        for (int z = -numTileVertical / 2; z < numTileVertical / 2; z++) {
-            for (int x = -numTileHorizontal / 2; x < numTileHorizontal / 2; x++) {
+        Model item = assetManager.get("models/mushroom.g3db", Model.class);
+
+        int numTileVerticalHalf = numTileVertical / 2;
+        int numTileHorizontalHalf = numTileHorizontal / 2;
+        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
+            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
                 if (Math.random() > 0.1) {
                     continue;
                 }
 
-                Model item = assetManager.get("models/mushroom.g3db", Model.class);
                 ModelInstance itemInstance = new ModelInstance(item);
-                itemInstance.transform.translate(x * tileSize + tileSize / 2, 0, z * tileSize + tileSize / 2);
+                itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
                 itemInstance.transform.scale(0.4f, 0.4f, 0.4f);
                 instances.add(itemInstance);
 
@@ -113,7 +117,7 @@ public class BlueRobe extends ApplicationAdapter {
         }
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClearColor(0.12f, 0.56f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         float deltaTime = Gdx.graphics.getDeltaTime();
