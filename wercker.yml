@@ -28,4 +28,4 @@ deploy:
     - script:
         name: upload to deploygate
         code: |
-          curl -F file=@android/build/outputs/apk/android-release-unsigned.apk -F token="$DEPLOYGATE_API_KEY" -F message="build: $WERCKER_GIT_COMMIT" https://deploygate.com/api/users/slightair/apps
+          curl -F file=@android/build/outputs/apk/android-release.apk -F token="$DEPLOYGATE_API_KEY" -F message="build: $WERCKER_GIT_COMMIT" https://deploygate.com/api/users/slightair/apps
