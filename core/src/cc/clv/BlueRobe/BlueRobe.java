@@ -14,8 +14,12 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
+import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 
 public class BlueRobe extends ApplicationAdapter {
     public Environment environment;
@@ -26,10 +30,64 @@ public class BlueRobe extends ApplicationAdapter {
     public AssetManager assetManager;
     public Array<ModelInstance> instances = new Array<ModelInstance>();
     public Array<AnimationController> animationControllers = new Array<AnimationController>();
+    private AnimationController characterAnimationController;
     public boolean loading;
     public int numTileHorizontal = 9;
     public int numTileVertical = 24;
     private float tileSize = 16.0f;
+
+    private class SceneGestureListener implements GestureDetector.GestureListener {
+        @Override
+        public boolean touchDown(float x, float y, int pointer, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean tap(float x, float y, int count, int button) {
+            if (characterAnimationController != null) {
+                characterAnimationController.animate("jump", new AnimationController.AnimationListener() {
+                    @Override
+                    public void onEnd(AnimationController.AnimationDesc animation) {
+                    }
+
+                    @Override
+                    public void onLoop(AnimationController.AnimationDesc animation) {
+                    }
+                }, 0.0f);
+            }
+            return false;
+        }
+
+        @Override
+        public boolean longPress(float x, float y) {
+            return false;
+        }
+
+        @Override
+        public boolean fling(float velocityX, float velocityY, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean pan(float x, float y, float deltaX, float deltaY) {
+            return false;
+        }
+
+        @Override
+        public boolean panStop(float x, float y, int pointer, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean zoom(float initialDistance, float distance) {
+            return false;
+        }
+
+        @Override
+        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+            return false;
+        }
+    }
 
     @Override
     public void create() {
@@ -77,14 +135,22 @@ public class BlueRobe extends ApplicationAdapter {
 
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
+
+        Gdx.input.setInputProcessor(new GestureDetector(new SceneGestureListener()));
     }
 
     private void doneLoading() {
         Model character = assetManager.get("models/hikari.g3db", Model.class);
+        character.animations.add(new JumpAnimation(character.getNode("hikari_root"), 10.0f));
+
         ModelInstance characterInstance = new ModelInstance(character);
         characterInstance.transform.translate(0f, 0f, 80f);
         characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
         instances.add(characterInstance);
+
+        characterAnimationController = new AnimationController(characterInstance);
+        characterAnimationController.allowSameAnimation = true;
+        animationControllers.add(characterAnimationController);
 
         Model item = assetManager.get("models/mushroom.g3db", Model.class);
 
