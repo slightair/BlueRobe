@@ -17,9 +17,15 @@ build:
         name: build
         code: |
           ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR android:assembleRelease
-after-steps:
-  - script:
-    name: inspect build result
-    code: |
-      ls -la android/build/outputs/apk/
-      cp android/build/outputs/apk/*.apk $WERCKER_REPORT_ARTIFACTS_DIR
+  after-steps:
+    - script:
+        name: inspect build result
+        code: |
+          ls -la android/build/outputs/apk/
+          cp android/build/outputs/apk/*.apk $WERCKER_REPORT_ARTIFACTS_DIR
+deploy:
+  steps:
+    - script:
+        name: upload to deploygate
+        code: |
+          curl -F file=@android/build/outputs/apk/android-release-unsigned.apk -F token="$DEPLOYGATE_API_KEY" -F message="build: $WERCKER_GIT_COMMIT" https://deploygate.com/api/users/slightair/apps
