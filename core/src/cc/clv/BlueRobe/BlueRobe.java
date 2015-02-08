@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -20,6 +21,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
+import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
+import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 
 public class BlueRobe extends ApplicationAdapter {
     public Environment environment;
@@ -39,12 +42,16 @@ public class BlueRobe extends ApplicationAdapter {
     private class SceneGestureListener implements GestureDetector.GestureListener {
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
+            if (characterAnimationController != null) {
+                characterAnimationController.animate("shrink", 0.0f);
+            }
             return false;
         }
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
             if (characterAnimationController != null) {
+                characterAnimationController.animate("returnShrink", 0.0f);
                 characterAnimationController.animate("jump", new AnimationController.AnimationListener() {
                     @Override
                     public void onEnd(AnimationController.AnimationDesc animation) {
@@ -53,7 +60,7 @@ public class BlueRobe extends ApplicationAdapter {
                     @Override
                     public void onLoop(AnimationController.AnimationDesc animation) {
                     }
-                }, 0.0f);
+                }, ReturnShrinkAnimation.defaultDuration);
             }
             return false;
         }
@@ -141,7 +148,10 @@ public class BlueRobe extends ApplicationAdapter {
 
     private void doneLoading() {
         Model character = assetManager.get("models/hikari.g3db", Model.class);
-        character.animations.add(new JumpAnimation(character.getNode("hikari_root"), 10.0f));
+        Node node = character.getNode("hikari_root");
+        character.animations.add(new JumpAnimation(node, 10.0f));
+        character.animations.add(new ShrinkAnimation(node));
+        character.animations.add(new ReturnShrinkAnimation(node));
 
         ModelInstance characterInstance = new ModelInstance(character);
         characterInstance.transform.translate(0f, 0f, 80f);
