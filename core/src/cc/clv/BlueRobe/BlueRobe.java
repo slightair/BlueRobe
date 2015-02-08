@@ -174,7 +174,6 @@ public class BlueRobe extends ApplicationAdapter {
 
                 ModelInstance itemInstance = new ModelInstance(item);
                 itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
-                itemInstance.transform.scale(0.4f, 0.4f, 0.4f);
                 instances.add(itemInstance);
 
                 AnimationController animationController = new AnimationController(itemInstance);
