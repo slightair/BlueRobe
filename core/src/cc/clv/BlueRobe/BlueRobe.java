@@ -34,10 +34,12 @@ public class BlueRobe extends ApplicationAdapter {
     public Array<ModelInstance> instances = new Array<ModelInstance>();
     public Array<AnimationController> animationControllers = new Array<AnimationController>();
     private AnimationController characterAnimationController;
+    private ModelInstance characterInstance;
     public boolean loading;
     public int numTileHorizontal = 9;
     public int numTileVertical = 24;
     private float tileSize = 16.0f;
+    private static final float moveThreshold = 200.0f;
 
     private class SceneGestureListener implements GestureDetector.GestureListener {
         @Override
@@ -72,6 +74,14 @@ public class BlueRobe extends ApplicationAdapter {
 
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
+            if (velocityX > moveThreshold) {
+                characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
+                camera.translate(-tileSize, 0.0f, 0.0f);
+            } else if (velocityX < -moveThreshold) {
+                characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
+                camera.translate(tileSize, 0.0f, 0.0f);
+            }
+            camera.update();
             return false;
         }
 
@@ -82,6 +92,7 @@ public class BlueRobe extends ApplicationAdapter {
 
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
+            characterAnimationController.animate("returnShrink", 0.0f);
             return false;
         }
 
@@ -153,7 +164,7 @@ public class BlueRobe extends ApplicationAdapter {
         character.animations.add(new ShrinkAnimation(node));
         character.animations.add(new ReturnShrinkAnimation(node));
 
-        ModelInstance characterInstance = new ModelInstance(character);
+        characterInstance = new ModelInstance(character);
         characterInstance.transform.translate(0f, 0f, 80f);
         characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
         instances.add(characterInstance);
