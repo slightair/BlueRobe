@@ -75,11 +75,11 @@ public class BlueRobe extends ApplicationAdapter {
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
             if (velocityX > moveThreshold) {
-                characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
-                camera.translate(-tileSize, 0.0f, 0.0f);
-            } else if (velocityX < -moveThreshold) {
                 characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
                 camera.translate(tileSize, 0.0f, 0.0f);
+            } else if (velocityX < -moveThreshold) {
+                characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
+                camera.translate(-tileSize, 0.0f, 0.0f);
             }
             camera.update();
             return false;
