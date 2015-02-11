@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g3d.model.NodeKeyframe;
  * Created by slightair on 2015/02/01.
  */
 public class JumpAnimation extends Animation {
-    public static final float defaultDuration = 1.0f;
+    public static final float defaultDuration = 0.5f;
 
     public JumpAnimation(Node node, float height) {
         this(node, height, defaultDuration);
