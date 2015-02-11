@@ -20,6 +20,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenAccessor;
+import aurelienribon.tweenengine.TweenEquation;
+import aurelienribon.tweenengine.TweenEquations;
+import aurelienribon.tweenengine.TweenManager;
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
@@ -40,6 +45,36 @@ public class BlueRobe extends ApplicationAdapter {
     public int numTileVertical = 24;
     private float tileSize = 16.0f;
     private static final float moveThreshold = 200.0f;
+    private TweenManager cameraMoveManager = new TweenManager();
+    private static final float cameraMoveDuration = 0.5f;
+
+    private class CameraTween implements TweenAccessor<OrthographicCamera> {
+        public static final int POSITION_X = 1;
+
+        @Override
+        public int getValues(OrthographicCamera orthographicCamera, int tweenType, float[] returnValues) {
+            switch (tweenType) {
+                case POSITION_X:
+                    returnValues[0] = orthographicCamera.position.x;
+                    return 1;
+                default:
+                    assert false;
+                    return -1;
+            }
+        }
+
+        @Override
+        public void setValues(OrthographicCamera orthographicCamera, int tweenType, float[] newValues) {
+            switch (tweenType) {
+                case POSITION_X:
+                    orthographicCamera.position.x = newValues[0];
+                    break;
+                default:
+                    assert false;
+                    break;
+            }
+        }
+    }
 
     private class SceneGestureListener implements GestureDetector.GestureListener {
         @Override
@@ -76,12 +111,19 @@ public class BlueRobe extends ApplicationAdapter {
         public boolean fling(float velocityX, float velocityY, int button) {
             if (velocityX > moveThreshold) {
                 characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
-                camera.translate(tileSize, 0.0f, 0.0f);
+
+                Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
+                        .targetRelative(tileSize)
+                        .ease(TweenEquations.easeOutExpo)
+                        .start(cameraMoveManager);
             } else if (velocityX < -moveThreshold) {
                 characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
-                camera.translate(-tileSize, 0.0f, 0.0f);
+
+                Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
+                        .targetRelative(-tileSize)
+                        .ease(TweenEquations.easeOutExpo)
+                        .start(cameraMoveManager);
             }
-            camera.update();
             return false;
         }
 
@@ -154,6 +196,8 @@ public class BlueRobe extends ApplicationAdapter {
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
+        Tween.registerAccessor(OrthographicCamera.class, new CameraTween());
+
         Gdx.input.setInputProcessor(new GestureDetector(new SceneGestureListener()));
     }
 
@@ -210,6 +254,9 @@ public class BlueRobe extends ApplicationAdapter {
         for (AnimationController animationController : animationControllers) {
             animationController.update(deltaTime);
         }
+
+        cameraMoveManager.update(deltaTime);
+        camera.update();
 
         shadowLight.begin(Vector3.Zero, camera.direction);
         shadowBatch.begin(shadowLight.getCamera());
