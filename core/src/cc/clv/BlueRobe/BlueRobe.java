@@ -2,6 +2,10 @@ package cc.clv.BlueRobe;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -29,7 +33,7 @@ import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 
-public class BlueRobe extends ApplicationAdapter {
+public class BlueRobe extends ApplicationAdapter implements InputProcessor {
     public Environment environment;
     public DirectionalShadowLight shadowLight;
     public OrthographicCamera camera;
@@ -47,6 +51,56 @@ public class BlueRobe extends ApplicationAdapter {
     private static final float moveThreshold = 200.0f;
     private TweenManager cameraMoveManager = new TweenManager();
     private static final float cameraMoveDuration = 0.5f;
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        switch(keycode) {
+            case Input.Keys.A:
+            case Input.Keys.LEFT:
+                characterMoveLeft();
+                break;
+            case Input.Keys.D:
+            case Input.Keys.RIGHT:
+                characterMoveRight();
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
 
     private class CameraTween implements TweenAccessor<OrthographicCamera> {
         public static final int POSITION_X = 1;
@@ -110,19 +164,9 @@ public class BlueRobe extends ApplicationAdapter {
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
             if (velocityX > moveThreshold) {
-                characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
-
-                Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                        .targetRelative(tileSize)
-                        .ease(TweenEquations.easeOutExpo)
-                        .start(cameraMoveManager);
+                characterMoveRight();
             } else if (velocityX < -moveThreshold) {
-                characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
-
-                Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                        .targetRelative(-tileSize)
-                        .ease(TweenEquations.easeOutExpo)
-                        .start(cameraMoveManager);
+                characterMoveLeft();
             }
             return false;
         }
@@ -147,6 +191,24 @@ public class BlueRobe extends ApplicationAdapter {
         public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
             return false;
         }
+    }
+
+    public void characterMoveLeft() {
+        characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
+
+        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
+                .targetRelative(-tileSize)
+                .ease(TweenEquations.easeOutExpo)
+                .start(cameraMoveManager);
+    }
+
+    public void characterMoveRight() {
+        characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
+
+        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
+                .targetRelative(tileSize)
+                .ease(TweenEquations.easeOutExpo)
+                .start(cameraMoveManager);
     }
 
     @Override
@@ -198,7 +260,10 @@ public class BlueRobe extends ApplicationAdapter {
 
         Tween.registerAccessor(OrthographicCamera.class, new CameraTween());
 
-        Gdx.input.setInputProcessor(new GestureDetector(new SceneGestureListener()));
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(new GestureDetector(new SceneGestureListener()));
+        multiplexer.addProcessor(this);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     private void doneLoading() {
