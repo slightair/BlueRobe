@@ -3,7 +3,6 @@ package cc.clv.BlueRobe;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
@@ -11,7 +10,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
@@ -26,7 +29,6 @@ import com.badlogic.gdx.utils.Array;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenAccessor;
-import aurelienribon.tweenengine.TweenEquation;
 import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
@@ -34,6 +36,7 @@ import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 
 public class BlueRobe extends ApplicationAdapter implements InputProcessor {
+
     public Environment environment;
     public DirectionalShadowLight shadowLight;
     public OrthographicCamera camera;
@@ -59,7 +62,7 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        switch(keycode) {
+        switch (keycode) {
             case Input.Keys.A:
             case Input.Keys.LEFT:
                 characterMoveLeft();
@@ -103,10 +106,12 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
     }
 
     private class CameraTween implements TweenAccessor<OrthographicCamera> {
+
         public static final int POSITION_X = 1;
 
         @Override
-        public int getValues(OrthographicCamera orthographicCamera, int tweenType, float[] returnValues) {
+        public int getValues(OrthographicCamera orthographicCamera, int tweenType,
+                float[] returnValues) {
             switch (tweenType) {
                 case POSITION_X:
                     returnValues[0] = orthographicCamera.position.x;
@@ -118,7 +123,8 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
         }
 
         @Override
-        public void setValues(OrthographicCamera orthographicCamera, int tweenType, float[] newValues) {
+        public void setValues(OrthographicCamera orthographicCamera, int tweenType,
+                float[] newValues) {
             switch (tweenType) {
                 case POSITION_X:
                     orthographicCamera.position.x = newValues[0];
@@ -131,6 +137,7 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
     }
 
     private class SceneGestureListener implements GestureDetector.GestureListener {
+
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
             if (characterAnimationController != null) {
@@ -143,15 +150,16 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
         public boolean tap(float x, float y, int count, int button) {
             if (characterAnimationController != null) {
                 characterAnimationController.animate("returnShrink", 0.0f);
-                characterAnimationController.animate("jump", new AnimationController.AnimationListener() {
-                    @Override
-                    public void onEnd(AnimationController.AnimationDesc animation) {
-                    }
+                characterAnimationController
+                        .animate("jump", new AnimationController.AnimationListener() {
+                            @Override
+                            public void onEnd(AnimationController.AnimationDesc animation) {
+                            }
 
-                    @Override
-                    public void onLoop(AnimationController.AnimationDesc animation) {
-                    }
-                }, ReturnShrinkAnimation.defaultDuration);
+                            @Override
+                            public void onLoop(AnimationController.AnimationDesc animation) {
+                            }
+                        }, ReturnShrinkAnimation.defaultDuration);
             }
             return false;
         }
@@ -188,7 +196,8 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
         }
 
         @Override
-        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
+                Vector2 pointer2) {
             return false;
         }
     }
@@ -215,7 +224,8 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
     public void create() {
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 1f));
-        DirectionalLight directionalLight = new DirectionalLight().set(0.8f, 0.8f, 0.8f, 24f, -24f, 0f);
+        DirectionalLight directionalLight = new DirectionalLight()
+                .set(0.8f, 0.8f, 0.8f, 24f, -24f, 0f);
         environment.add(directionalLight);
         shadowLight = new DirectionalShadowLight(1024, 1024, 320f, 100f, 1f, 300f);
         shadowLight.set(directionalLight);
@@ -224,7 +234,8 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
         float viewportSize = 128.0f;
         float aspectRatio = Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
         camera = new OrthographicCamera(viewportSize, viewportSize * 2 * aspectRatio);
-        camera.position.set(camera.viewportWidth * 0.15f, camera.viewportHeight * 0.5f, camera.viewportHeight * 0.3f);
+        camera.position.set(camera.viewportWidth * 0.15f, camera.viewportHeight * 0.5f,
+                camera.viewportHeight * 0.3f);
         camera.lookAt(0, 0, 0);
         camera.near = -100f;
         camera.far = 300f;
