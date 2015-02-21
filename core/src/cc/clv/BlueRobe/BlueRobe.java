@@ -2,9 +2,6 @@ package cc.clv.BlueRobe;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -22,8 +19,6 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -34,8 +29,18 @@ import aurelienribon.tweenengine.TweenManager;
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
+import cc.clv.BlueRobe.input.GameSceneInput;
+import rx.Observer;
 
-public class BlueRobe extends ApplicationAdapter implements InputProcessor {
+public class BlueRobe extends ApplicationAdapter {
+
+    public enum Action {
+        MOVE_LEFT,
+        MOVE_RIGHT,
+        PREPARE_JUMP,
+        JUMP,
+        CANCEL_JUMP,
+    }
 
     public Environment environment;
     public DirectionalShadowLight shadowLight;
@@ -51,59 +56,8 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
     public int numTileHorizontal = 9;
     public int numTileVertical = 24;
     private float tileSize = 16.0f;
-    private static final float moveThreshold = 200.0f;
     private TweenManager cameraMoveManager = new TweenManager();
     private static final float cameraMoveDuration = 0.5f;
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        switch (keycode) {
-            case Input.Keys.A:
-            case Input.Keys.LEFT:
-                characterMoveLeft();
-                break;
-            case Input.Keys.D:
-            case Input.Keys.RIGHT:
-                characterMoveRight();
-                break;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
 
     private class CameraTween implements TweenAccessor<OrthographicCamera> {
 
@@ -136,73 +90,7 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
         }
     }
 
-    private class SceneGestureListener implements GestureDetector.GestureListener {
-
-        @Override
-        public boolean touchDown(float x, float y, int pointer, int button) {
-            if (characterAnimationController != null) {
-                characterAnimationController.animate("shrink", 0.0f);
-            }
-            return false;
-        }
-
-        @Override
-        public boolean tap(float x, float y, int count, int button) {
-            if (characterAnimationController != null) {
-                characterAnimationController.animate("returnShrink", 0.0f);
-                characterAnimationController
-                        .animate("jump", new AnimationController.AnimationListener() {
-                            @Override
-                            public void onEnd(AnimationController.AnimationDesc animation) {
-                            }
-
-                            @Override
-                            public void onLoop(AnimationController.AnimationDesc animation) {
-                            }
-                        }, ReturnShrinkAnimation.defaultDuration);
-            }
-            return false;
-        }
-
-        @Override
-        public boolean longPress(float x, float y) {
-            return false;
-        }
-
-        @Override
-        public boolean fling(float velocityX, float velocityY, int button) {
-            if (velocityX > moveThreshold) {
-                characterMoveRight();
-            } else if (velocityX < -moveThreshold) {
-                characterMoveLeft();
-            }
-            return false;
-        }
-
-        @Override
-        public boolean pan(float x, float y, float deltaX, float deltaY) {
-            return false;
-        }
-
-        @Override
-        public boolean panStop(float x, float y, int pointer, int button) {
-            characterAnimationController.animate("returnShrink", 0.0f);
-            return false;
-        }
-
-        @Override
-        public boolean zoom(float initialDistance, float distance) {
-            return false;
-        }
-
-        @Override
-        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
-                Vector2 pointer2) {
-            return false;
-        }
-    }
-
-    public void characterMoveLeft() {
+    private void performMoveLeftAction() {
         characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
 
         Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
@@ -211,13 +99,72 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
                 .start(cameraMoveManager);
     }
 
-    public void characterMoveRight() {
+    private void performMoveRightAction() {
         characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
 
         Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
                 .targetRelative(tileSize)
                 .ease(TweenEquations.easeOutExpo)
                 .start(cameraMoveManager);
+    }
+
+    private void performPrepareJumpAction() {
+        if (characterAnimationController != null) {
+            characterAnimationController.animate("shrink", 0.0f);
+        }
+    }
+
+    private void performJumpAction() {
+        if (characterAnimationController != null) {
+            characterAnimationController.animate("returnShrink", 0.0f);
+            characterAnimationController.animate("jump",
+                    ReturnShrinkAnimation.defaultDuration);
+        }
+    }
+
+    private void performCancelJumpAction() {
+        if (characterAnimationController != null) {
+            characterAnimationController.animate("returnShrink", 0.0f);
+        }
+    }
+
+    private void doneLoading() {
+        Model character = assetManager.get("models/hikari.g3db", Model.class);
+        Node node = character.getNode("hikari_root");
+        character.animations.add(new JumpAnimation(node, 10.0f));
+        character.animations.add(new ShrinkAnimation(node));
+        character.animations.add(new ReturnShrinkAnimation(node));
+
+        characterInstance = new ModelInstance(character);
+        characterInstance.transform.translate(0f, 0f, 80f);
+        characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
+        instances.add(characterInstance);
+
+        characterAnimationController = new AnimationController(characterInstance);
+        characterAnimationController.allowSameAnimation = true;
+        animationControllers.add(characterAnimationController);
+
+        Model item = assetManager.get("models/mushroom.g3db", Model.class);
+
+        int numTileVerticalHalf = numTileVertical / 2;
+        int numTileHorizontalHalf = numTileHorizontal / 2;
+        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
+            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
+                if (Math.random() > 0.1) {
+                    continue;
+                }
+
+                ModelInstance itemInstance = new ModelInstance(item);
+                itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
+                instances.add(itemInstance);
+
+                AnimationController animationController = new AnimationController(itemInstance);
+                animationController.setAnimation("mushroom|mushroomAction", -1);
+                animationControllers.add(animationController);
+            }
+        }
+
+        loading = false;
     }
 
     @Override
@@ -269,51 +216,43 @@ public class BlueRobe extends ApplicationAdapter implements InputProcessor {
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
+        Observer<Action> sceneControllerObserver = new Observer<Action>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Action action) {
+                System.out.println("" + action);
+                switch (action) {
+                    case MOVE_LEFT:
+                        performMoveLeftAction();
+                        break;
+                    case MOVE_RIGHT:
+                        performMoveRightAction();
+                        break;
+                    case PREPARE_JUMP:
+                        performPrepareJumpAction();
+                        break;
+                    case JUMP:
+                        performJumpAction();
+                        break;
+                    case CANCEL_JUMP:
+                        performCancelJumpAction();
+                        break;
+                }
+            }
+        };
+
         Tween.registerAccessor(OrthographicCamera.class, new CameraTween());
 
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(new GestureDetector(new SceneGestureListener()));
-        multiplexer.addProcessor(this);
-        Gdx.input.setInputProcessor(multiplexer);
-    }
-
-    private void doneLoading() {
-        Model character = assetManager.get("models/hikari.g3db", Model.class);
-        Node node = character.getNode("hikari_root");
-        character.animations.add(new JumpAnimation(node, 10.0f));
-        character.animations.add(new ShrinkAnimation(node));
-        character.animations.add(new ReturnShrinkAnimation(node));
-
-        characterInstance = new ModelInstance(character);
-        characterInstance.transform.translate(0f, 0f, 80f);
-        characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
-        instances.add(characterInstance);
-
-        characterAnimationController = new AnimationController(characterInstance);
-        characterAnimationController.allowSameAnimation = true;
-        animationControllers.add(characterAnimationController);
-
-        Model item = assetManager.get("models/mushroom.g3db", Model.class);
-
-        int numTileVerticalHalf = numTileVertical / 2;
-        int numTileHorizontalHalf = numTileHorizontal / 2;
-        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
-            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
-                if (Math.random() > 0.1) {
-                    continue;
-                }
-
-                ModelInstance itemInstance = new ModelInstance(item);
-                itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
-                instances.add(itemInstance);
-
-                AnimationController animationController = new AnimationController(itemInstance);
-                animationController.setAnimation("mushroom|mushroomAction", -1);
-                animationControllers.add(animationController);
-            }
-        }
-
-        loading = false;
+        Gdx.input.setInputProcessor(new GameSceneInput(sceneControllerObserver));
     }
 
     @Override
