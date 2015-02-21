@@ -6,18 +6,17 @@ import com.badlogic.gdx.graphics.g3d.model.NodeAnimation;
 import com.badlogic.gdx.graphics.g3d.model.NodeKeyframe;
 
 /**
- * Created by slightair on 2015/02/08.
+ * Created by slightair on 15/02/21.
  */
-public class ReturnShrinkAnimation extends Animation {
+public class StretchAnimation extends Animation {
+    public static final float defaultDuration = 1.2f;
 
-    public static final float defaultDuration = 0.1f;
-
-    public ReturnShrinkAnimation(Node node) {
+    public StretchAnimation(Node node) {
         this(node, defaultDuration);
     }
 
-    public ReturnShrinkAnimation(Node node, float duration) {
-        this.id = "returnShrink";
+    public StretchAnimation(Node node, float duration) {
+        this.id = "stretch";
         this.duration = duration;
 
         NodeAnimation animation = new NodeAnimation();
@@ -33,12 +32,20 @@ public class ReturnShrinkAnimation extends Animation {
         animation.keyframes.add(keyframe);
 
         keyframe = new NodeKeyframe();
+        keyframe.keytime = duration / 2;
+        keyframe.scale.x = 0.9f;
+        keyframe.scale.y = 1.1f;
+        keyframe.scale.z = 0.9f;
+        animation.keyframes.add(keyframe);
+
+        keyframe = new NodeKeyframe();
         keyframe.keytime = duration;
-        keyframe.scale.x = 1.0f;
-        keyframe.scale.y = 1.0f;
-        keyframe.scale.z = 1.0f;
+        keyframe.scale.x = 1.1f;
+        keyframe.scale.y = 0.9f;
+        keyframe.scale.z = 1.1f;
         animation.keyframes.add(keyframe);
 
         nodeAnimations.add(animation);
     }
 }
+

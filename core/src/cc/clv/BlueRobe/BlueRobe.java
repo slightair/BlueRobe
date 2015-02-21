@@ -29,6 +29,7 @@ import aurelienribon.tweenengine.TweenManager;
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
+import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
 import cc.clv.BlueRobe.input.GameSceneInput;
 import rx.Observer;
 
@@ -145,6 +146,7 @@ public class BlueRobe extends ApplicationAdapter {
         animationControllers.add(characterAnimationController);
 
         Model item = assetManager.get("models/items.g3db", Model.class);
+        item.animations.add(new StretchAnimation(item.getNode("mushroom")));
 
         int numTileVerticalHalf = numTileVertical / 2;
         int numTileHorizontalHalf = numTileHorizontal / 2;
@@ -157,6 +159,10 @@ public class BlueRobe extends ApplicationAdapter {
                 ModelInstance itemInstance = new ModelInstance(item, "mushroom");
                 itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
                 instances.add(itemInstance);
+
+                AnimationController animationController = new AnimationController(itemInstance);
+                animationController.setAnimation("stretch", -1);
+                animationControllers.add(animationController);
             }
         }
 
