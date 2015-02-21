@@ -144,7 +144,7 @@ public class BlueRobe extends ApplicationAdapter {
         characterAnimationController.allowSameAnimation = true;
         animationControllers.add(characterAnimationController);
 
-        Model item = assetManager.get("models/mushroom.g3db", Model.class);
+        Model item = assetManager.get("models/items.g3db", Model.class);
 
         int numTileVerticalHalf = numTileVertical / 2;
         int numTileHorizontalHalf = numTileHorizontal / 2;
@@ -154,13 +154,9 @@ public class BlueRobe extends ApplicationAdapter {
                     continue;
                 }
 
-                ModelInstance itemInstance = new ModelInstance(item);
+                ModelInstance itemInstance = new ModelInstance(item, "mushroom");
                 itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
                 instances.add(itemInstance);
-
-                AnimationController animationController = new AnimationController(itemInstance);
-                animationController.setAnimation("mushroom|mushroomAction", -1);
-                animationControllers.add(animationController);
             }
         }
 
@@ -190,7 +186,7 @@ public class BlueRobe extends ApplicationAdapter {
 
         assetManager = new AssetManager();
         assetManager.load("models/hikari.g3db", Model.class);
-        assetManager.load("models/mushroom.g3db", Model.class);
+        assetManager.load("models/items.g3db", Model.class);
         loading = true;
 
         float tileHeight = 30.0f;
@@ -229,7 +225,6 @@ public class BlueRobe extends ApplicationAdapter {
 
             @Override
             public void onNext(Action action) {
-                System.out.println("" + action);
                 switch (action) {
                     case MOVE_LEFT:
                         performMoveLeftAction();
