@@ -84,6 +84,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
+        compile 'io.reactivex:rxjava:1.0.0'
         compile fileTree(dir: '../libs', include: '*.jar')
     }
 }
