@@ -3,12 +3,9 @@ package cc.clv.BlueRobe;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -18,7 +15,6 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -26,6 +22,8 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenAccessor;
 import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
+import cc.clv.BlueRobe.engine.GroundBlock;
+import cc.clv.BlueRobe.graphics.GroundBlockModel;
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
@@ -56,7 +54,6 @@ public class BlueRobe extends ApplicationAdapter {
     public boolean loading;
     public int numTileHorizontal = 9;
     public int numTileVertical = 24;
-    private float tileSize = 16.0f;
     private TweenManager cameraMoveManager = new TweenManager();
     private static final float cameraMoveDuration = 0.5f;
 
@@ -92,19 +89,19 @@ public class BlueRobe extends ApplicationAdapter {
     }
 
     private void performMoveLeftAction() {
-        characterInstance.transform.translate(tileSize, 0.0f, 0.0f);
+        characterInstance.transform.translate(GroundBlockModel.SIZE, 0.0f, 0.0f);
 
         Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                .targetRelative(-tileSize)
+                .targetRelative(-GroundBlockModel.SIZE)
                 .ease(TweenEquations.easeOutExpo)
                 .start(cameraMoveManager);
     }
 
     private void performMoveRightAction() {
-        characterInstance.transform.translate(-tileSize, 0.0f, 0.0f);
+        characterInstance.transform.translate(-GroundBlockModel.SIZE, 0.0f, 0.0f);
 
         Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                .targetRelative(tileSize)
+                .targetRelative(GroundBlockModel.SIZE)
                 .ease(TweenEquations.easeOutExpo)
                 .start(cameraMoveManager);
     }
@@ -157,7 +154,8 @@ public class BlueRobe extends ApplicationAdapter {
                 }
 
                 ModelInstance itemInstance = new ModelInstance(item, "mushroom");
-                itemInstance.transform.translate(x * tileSize, 0, z * tileSize);
+                itemInstance.transform
+                        .translate(x * GroundBlockModel.SIZE, 0, z * GroundBlockModel.SIZE);
                 instances.add(itemInstance);
 
                 AnimationController animationController = new AnimationController(itemInstance);
@@ -195,14 +193,8 @@ public class BlueRobe extends ApplicationAdapter {
         assetManager.load("models/items.g3db", Model.class);
         loading = true;
 
-        float tileHeight = 30.0f;
-        ModelBuilder modelBuilder = new ModelBuilder();
-        Model whiteGround = modelBuilder.createBox(tileSize, tileHeight, tileSize,
-                new Material(ColorAttribute.createDiffuse(Color.WHITE)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        Model grayGround = modelBuilder.createBox(tileSize, tileHeight, tileSize,
-                new Material(ColorAttribute.createDiffuse(Color.LIGHT_GRAY)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        Model whiteGround = new GroundBlockModel(new GroundBlock(GroundBlock.Type.DebugWhite));
+        Model grayGround = new GroundBlockModel(new GroundBlock(GroundBlock.Type.DebugGray));
 
         int numTileVerticalHalf = numTileVertical / 2;
         int numTileHorizontalHalf = numTileHorizontal / 2;
@@ -210,7 +202,8 @@ public class BlueRobe extends ApplicationAdapter {
             for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
                 Model model = (x + z % 2) % 2 == 0 ? whiteGround : grayGround;
                 ModelInstance instance = new ModelInstance(model);
-                instance.transform.translate(x * tileSize, -tileHeight / 2, z * tileSize);
+                instance.transform
+                        .translate(x * GroundBlockModel.SIZE, -32 / 2, z * GroundBlockModel.SIZE);
                 instances.add(instance);
             }
         }

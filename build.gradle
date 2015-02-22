@@ -80,11 +80,17 @@ project(":ios") {
 project(":core") {
     apply plugin: "java"
 
+    configurations { provided }
+
+    sourceSets {
+        main { compileClasspath += configurations.provided }
+    }
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile 'io.reactivex:rxjava:1.0.0'
+        provided 'org.projectlombok:lombok:1.16.2'
         compile fileTree(dir: '../libs', include: '*.jar')
     }
 }
