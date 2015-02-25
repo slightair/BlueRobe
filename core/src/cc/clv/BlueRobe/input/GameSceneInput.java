@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import cc.clv.BlueRobe.BlueRobe;
 import rx.Observable;
-import rx.Observer;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by slightair on 15/02/21.
@@ -21,13 +21,13 @@ public class GameSceneInput extends InputMultiplexer {
 
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
-            Observable.just(BlueRobe.Action.PREPARE_JUMP).subscribe(actionObserver);
+            subject.onNext(BlueRobe.Action.CHARACTER_PREPARE_JUMP);
             return false;
         }
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
-            Observable.just(BlueRobe.Action.JUMP).subscribe(actionObserver);
+            subject.onNext(BlueRobe.Action.CHARACTER_JUMP);
             return false;
         }
 
@@ -39,9 +39,9 @@ public class GameSceneInput extends InputMultiplexer {
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
             if (velocityX > flingThreshold) {
-                Observable.just(BlueRobe.Action.MOVE_RIGHT).subscribe(actionObserver);
+                subject.onNext(BlueRobe.Action.CHARACTER_MOVE_RIGHT);
             } else if (velocityX < -flingThreshold) {
-                Observable.just(BlueRobe.Action.MOVE_LEFT).subscribe(actionObserver);
+                subject.onNext(BlueRobe.Action.CHARACTER_MOVE_LEFT);
             }
 
             return false;
@@ -54,7 +54,7 @@ public class GameSceneInput extends InputMultiplexer {
 
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
-            Observable.just(BlueRobe.Action.CANCEL_JUMP).subscribe(actionObserver);
+            subject.onNext(BlueRobe.Action.CHARACTER_CANCEL_JUMP);
             return false;
         }
 
@@ -82,11 +82,11 @@ public class GameSceneInput extends InputMultiplexer {
             switch (keycode) {
                 case Input.Keys.A:
                 case Input.Keys.LEFT:
-                    Observable.just(BlueRobe.Action.MOVE_LEFT).subscribe(actionObserver);
+                    subject.onNext(BlueRobe.Action.CHARACTER_MOVE_LEFT);
                     break;
                 case Input.Keys.D:
                 case Input.Keys.RIGHT:
-                    Observable.just(BlueRobe.Action.MOVE_RIGHT).subscribe(actionObserver);
+                    subject.onNext(BlueRobe.Action.CHARACTER_MOVE_RIGHT);
                     break;
             }
             return false;
@@ -123,12 +123,14 @@ public class GameSceneInput extends InputMultiplexer {
         }
     }
 
-    private Observer<BlueRobe.Action> actionObserver;
+    private final PublishSubject<BlueRobe.Action> subject = PublishSubject.create();
 
-    public GameSceneInput(Observer<BlueRobe.Action> observer) {
-        this.actionObserver = observer;
-
+    public GameSceneInput() {
         addProcessor(new GestureDetector(new GestureListener()));
         addProcessor(new KeyboardInputProcessor());
+    }
+
+    public Observable<BlueRobe.Action> getActions() {
+        return subject;
     }
 }

@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
@@ -20,25 +19,22 @@ import com.badlogic.gdx.utils.Array;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenAccessor;
-import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
+import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.engine.GroundBlock;
+import cc.clv.BlueRobe.graphics.CharacterModelInstance;
 import cc.clv.BlueRobe.graphics.GroundBlockModel;
-import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
-import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
-import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
 import cc.clv.BlueRobe.input.GameSceneInput;
-import rx.Observer;
 
 public class BlueRobe extends ApplicationAdapter {
 
     public enum Action {
-        MOVE_LEFT,
-        MOVE_RIGHT,
-        PREPARE_JUMP,
-        JUMP,
-        CANCEL_JUMP,
+        CHARACTER_MOVE_LEFT,
+        CHARACTER_MOVE_RIGHT,
+        CHARACTER_PREPARE_JUMP,
+        CHARACTER_JUMP,
+        CHARACTER_CANCEL_JUMP,
     }
 
     public Environment environment;
@@ -49,13 +45,13 @@ public class BlueRobe extends ApplicationAdapter {
     public AssetManager assetManager;
     public Array<ModelInstance> instances = new Array<ModelInstance>();
     public Array<AnimationController> animationControllers = new Array<AnimationController>();
-    private AnimationController characterAnimationController;
-    private ModelInstance characterInstance;
     public boolean loading;
     public int numTileHorizontal = 9;
     public int numTileVertical = 24;
     private TweenManager cameraMoveManager = new TweenManager();
     private static final float cameraMoveDuration = 0.5f;
+
+    private GameMaster gameMaster;
 
     private class CameraTween implements TweenAccessor<OrthographicCamera> {
 
@@ -88,59 +84,11 @@ public class BlueRobe extends ApplicationAdapter {
         }
     }
 
-    private void performMoveLeftAction() {
-        characterInstance.transform.translate(GroundBlockModel.SIZE, 0.0f, 0.0f);
-
-        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                .targetRelative(-GroundBlockModel.SIZE)
-                .ease(TweenEquations.easeOutExpo)
-                .start(cameraMoveManager);
-    }
-
-    private void performMoveRightAction() {
-        characterInstance.transform.translate(-GroundBlockModel.SIZE, 0.0f, 0.0f);
-
-        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                .targetRelative(GroundBlockModel.SIZE)
-                .ease(TweenEquations.easeOutExpo)
-                .start(cameraMoveManager);
-    }
-
-    private void performPrepareJumpAction() {
-        if (characterAnimationController != null) {
-            characterAnimationController.animate("shrink", 0.0f);
-        }
-    }
-
-    private void performJumpAction() {
-        if (characterAnimationController != null) {
-            characterAnimationController.animate("returnShrink", 0.0f);
-            characterAnimationController.animate("jump",
-                    ReturnShrinkAnimation.defaultDuration);
-        }
-    }
-
-    private void performCancelJumpAction() {
-        if (characterAnimationController != null) {
-            characterAnimationController.animate("returnShrink", 0.0f);
-        }
-    }
-
     private void doneLoading() {
-        Model character = assetManager.get("models/hikari.g3db", Model.class);
-        Node node = character.getNode("hikari_root");
-        character.animations.add(new JumpAnimation(node, 10.0f));
-        character.animations.add(new ShrinkAnimation(node));
-        character.animations.add(new ReturnShrinkAnimation(node));
-
-        characterInstance = new ModelInstance(character);
-        characterInstance.transform.translate(0f, 0f, 80f);
-        characterInstance.transform.rotate(new Vector3(0f, 1f, 0f), 180);
+        CharacterModelInstance characterInstance = CharacterModelInstance
+                .create(gameMaster.getCharacter(), assetManager);
         instances.add(characterInstance);
-
-        characterAnimationController = new AnimationController(characterInstance);
-        characterAnimationController.allowSameAnimation = true;
-        animationControllers.add(characterAnimationController);
+        animationControllers.add(characterInstance.getAnimationController());
 
         Model item = assetManager.get("models/items.g3db", Model.class);
         item.animations.add(new StretchAnimation(item.getNode("mushroom")));
@@ -211,42 +159,12 @@ public class BlueRobe extends ApplicationAdapter {
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
-        Observer<Action> sceneControllerObserver = new Observer<Action>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Action action) {
-                switch (action) {
-                    case MOVE_LEFT:
-                        performMoveLeftAction();
-                        break;
-                    case MOVE_RIGHT:
-                        performMoveRightAction();
-                        break;
-                    case PREPARE_JUMP:
-                        performPrepareJumpAction();
-                        break;
-                    case JUMP:
-                        performJumpAction();
-                        break;
-                    case CANCEL_JUMP:
-                        performCancelJumpAction();
-                        break;
-                }
-            }
-        };
-
         Tween.registerAccessor(OrthographicCamera.class, new CameraTween());
 
-        Gdx.input.setInputProcessor(new GameSceneInput(sceneControllerObserver));
+        GameSceneInput input = new GameSceneInput();
+        Gdx.input.setInputProcessor(input);
+
+        gameMaster = new GameMaster(input.getActions());
     }
 
     @Override
