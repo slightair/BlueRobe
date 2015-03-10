@@ -46,10 +46,10 @@ public class CharacterModelInstance extends ModelInstance {
                         break;
                     case JUMP:
                         animationController.animate("returnShrink", 0.0f);
-                        animationController
-                                .animate("jump", ReturnShrinkAnimation.defaultDuration);
+                        animationController.animate("jump",
+                                ReturnShrinkAnimation.defaultDuration);
                         break;
-                      case CANCEL_JUMP:
+                    case CANCEL_JUMP:
                         animationController.animate("returnShrink", 0.0f);
                         break;
                 }
@@ -71,22 +71,4 @@ public class CharacterModelInstance extends ModelInstance {
 
         return new CharacterModelInstance(model, character);
     }
-
-//    private void performMoveLeftAction() {
-//        characterInstance.transform.translate(GroundBlockModel.SIZE, 0.0f, 0.0f);
-//
-//        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-//                .targetRelative(-GroundBlockModel.SIZE)
-//                .ease(TweenEquations.easeOutExpo)
-//                .start(cameraMoveManager);
-//    }
-//
-//    private void performMoveRightAction() {
-//        characterInstance.transform.translate(-GroundBlockModel.SIZE, 0.0f, 0.0f);
-//
-//        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-//                .targetRelative(GroundBlockModel.SIZE)
-//                .ease(TweenEquations.easeOutExpo)
-//                .start(cameraMoveManager);
-//    }
 }

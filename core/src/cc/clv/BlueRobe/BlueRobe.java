@@ -17,11 +17,9 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenAccessor;
-import aurelienribon.tweenengine.TweenManager;
 import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.engine.GroundBlock;
+import cc.clv.BlueRobe.graphics.CameraMan;
 import cc.clv.BlueRobe.graphics.CharacterModelInstance;
 import cc.clv.BlueRobe.graphics.GroundBlockModel;
 import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
@@ -48,41 +46,9 @@ public class BlueRobe extends ApplicationAdapter {
     public boolean loading;
     public int numTileHorizontal = 9;
     public int numTileVertical = 24;
-    private TweenManager cameraMoveManager = new TweenManager();
-    private static final float cameraMoveDuration = 0.5f;
 
+    private CameraMan cameraMan;
     private GameMaster gameMaster;
-
-    private class CameraTween implements TweenAccessor<OrthographicCamera> {
-
-        public static final int POSITION_X = 1;
-
-        @Override
-        public int getValues(OrthographicCamera orthographicCamera, int tweenType,
-                float[] returnValues) {
-            switch (tweenType) {
-                case POSITION_X:
-                    returnValues[0] = orthographicCamera.position.x;
-                    return 1;
-                default:
-                    assert false;
-                    return -1;
-            }
-        }
-
-        @Override
-        public void setValues(OrthographicCamera orthographicCamera, int tweenType,
-                float[] newValues) {
-            switch (tweenType) {
-                case POSITION_X:
-                    orthographicCamera.position.x = newValues[0];
-                    break;
-                default:
-                    assert false;
-                    break;
-            }
-        }
-    }
 
     private void doneLoading() {
         CharacterModelInstance characterInstance = CharacterModelInstance
@@ -159,12 +125,11 @@ public class BlueRobe extends ApplicationAdapter {
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
-        Tween.registerAccessor(OrthographicCamera.class, new CameraTween());
-
         GameSceneInput input = new GameSceneInput();
         Gdx.input.setInputProcessor(input);
 
         gameMaster = new GameMaster(input.getActions());
+        cameraMan = new CameraMan(camera, gameMaster.getCharacter());
     }
 
     @Override
@@ -182,7 +147,7 @@ public class BlueRobe extends ApplicationAdapter {
             animationController.update(deltaTime);
         }
 
-        cameraMoveManager.update(deltaTime);
+        cameraMan.update(deltaTime);
         camera.update();
 
         shadowLight.begin(Vector3.Zero, camera.direction);
