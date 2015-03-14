@@ -2,7 +2,7 @@ package cc.clv.BlueRobe.graphics;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import cc.clv.BlueRobe.engine.Ground;
 import cc.clv.BlueRobe.engine.GroundBlock;
@@ -18,10 +18,12 @@ public class Groundlayouter {
 
     private final Ground ground;
     private final LineLayouter lineLayouter = new LineLayouter();
+    private final int capacity = GroundLine.NUM_BLOCKS * Ground.NUM_LINES;
+    private int lineCount = 0;
     private int firstLineIndex = 0;
 
     @lombok.Getter
-    private final ArrayList<ModelInstance> blockInstances = new ArrayList<ModelInstance>();
+    private final LinkedList<ModelInstance> blockInstances = new LinkedList<ModelInstance>();
 
     public Groundlayouter(Ground ground) {
         ground.getNewLines().subscribe(lineLayouter);
@@ -51,18 +53,27 @@ public class Groundlayouter {
                 GroundBlock groundBlock = modelInstance.getGroundBlock();
 
                 int lineIndex = groundBlock.getLineIndex() - firstLineIndex;
-                float z = (lineIndex - Ground.NUM_LINES / 2) * GroundBlockModel.SIZE;
+                float z = -(lineIndex - Ground.NUM_LINES / 2) * GroundBlockModel.SIZE;
                 float y = -GroundBlockModel.HEIGHT / 2;
                 float x = (groundBlock.getIndex() - GroundLine.NUM_BLOCKS / 2)
                         * GroundBlockModel.SIZE;
 
                 modelInstance.transform.translate(x, y, z);
-                blockInstances.add(modelInstance);
+                blockInstances.addLast(modelInstance);
+
+                if (blockInstances.size() > capacity) {
+                    blockInstances.removeFirst();
+                }
             }
         }
 
         @Override
         public void call(GroundLine groundLine) {
+            lineCount++;
+            if (lineCount > Ground.NUM_LINES) {
+                firstLineIndex++;
+            }
+
             Observable.from(groundLine.getBlocks())
                     .map(new ModelInstanceCreator())
                     .subscribe(new BlockLayouter());
