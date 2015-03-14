@@ -18,11 +18,11 @@ import cc.clv.BlueRobe.engine.GroundBlock;
 public class GroundBlockModel extends Model {
 
     public static final float SIZE = 16f;
-    private static final float HEIGHT = 32f;
-    private final GroundBlock block;
+    public static final float HEIGHT = 32f;
+    private final GroundBlock.Type blockType;
 
-    public GroundBlockModel(GroundBlock block) {
-        this.block = block;
+    public GroundBlockModel(GroundBlock.Type blockType) {
+        this.blockType = blockType;
 
         createBlockModel();
     }
@@ -33,7 +33,7 @@ public class GroundBlockModel extends Model {
 
     private void createDebugBlockModel() {
         Color color;
-        switch (block.getType()) {
+        switch (blockType) {
             case DebugWhite:
                 color = Color.WHITE;
                 break;

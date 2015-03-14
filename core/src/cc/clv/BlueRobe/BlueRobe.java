@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
@@ -18,11 +17,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import cc.clv.BlueRobe.engine.GameMaster;
-import cc.clv.BlueRobe.engine.GroundBlock;
 import cc.clv.BlueRobe.graphics.CameraMan;
 import cc.clv.BlueRobe.graphics.CharacterModelInstance;
-import cc.clv.BlueRobe.graphics.GroundBlockModel;
-import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
+import cc.clv.BlueRobe.graphics.Groundlayouter;
 import cc.clv.BlueRobe.input.GameSceneInput;
 
 public class BlueRobe extends ApplicationAdapter {
@@ -41,42 +38,42 @@ public class BlueRobe extends ApplicationAdapter {
     public ModelBatch modelBatch;
     public ModelBatch shadowBatch;
     public AssetManager assetManager;
-    public Array<ModelInstance> instances = new Array<ModelInstance>();
     public Array<AnimationController> animationControllers = new Array<AnimationController>();
     public boolean loading;
-    public int numTileHorizontal = 9;
-    public int numTileVertical = 24;
 
+    private CharacterModelInstance characterInstance;
+    private Groundlayouter groundlayouter;
     private CameraMan cameraMan;
     private GameMaster gameMaster;
 
     private void doneLoading() {
-        CharacterModelInstance characterInstance = CharacterModelInstance
-                .create(gameMaster.getCharacter(), assetManager);
-        instances.add(characterInstance);
+        characterInstance = CharacterModelInstance.create(gameMaster.getCharacter(),
+                assetManager);
         animationControllers.add(characterInstance.getAnimationController());
 
-        Model item = assetManager.get("models/items.g3db", Model.class);
-        item.animations.add(new StretchAnimation(item.getNode("mushroom")));
-
-        int numTileVerticalHalf = numTileVertical / 2;
-        int numTileHorizontalHalf = numTileHorizontal / 2;
-        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
-            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
-                if (Math.random() > 0.1) {
-                    continue;
-                }
-
-                ModelInstance itemInstance = new ModelInstance(item, "mushroom");
-                itemInstance.transform
-                        .translate(x * GroundBlockModel.SIZE, 0, z * GroundBlockModel.SIZE);
-                instances.add(itemInstance);
-
-                AnimationController animationController = new AnimationController(itemInstance);
-                animationController.setAnimation("stretch", -1);
-                animationControllers.add(animationController);
-            }
-        }
+//        Model item = assetManager.get("models/items.g3db", Model.class);
+//        item.animations.add(new StretchAnimation(item.getNode("mushroom")));
+//
+//        public int numTileHorizontal = 9;
+//        public int numTileVertical = 24;
+//        int numTileVerticalHalf = numTileVertical / 2;
+//        int numTileHorizontalHalf = numTileHorizontal / 2;
+//        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
+//            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
+//                if (Math.random() > 0.1) {
+//                    continue;
+//                }
+//
+//                ModelInstance itemInstance = new ModelInstance(item, "mushroom");
+//                itemInstance.transform
+//                        .translate(x * GroundBlockModel.SIZE, 0, z * GroundBlockModel.SIZE);
+//                instances.add(itemInstance);
+//
+//                AnimationController animationController = new AnimationController(itemInstance);
+//                animationController.setAnimation("stretch", -1);
+//                animationControllers.add(animationController);
+//            }
+//        }
 
         loading = false;
     }
@@ -107,21 +104,6 @@ public class BlueRobe extends ApplicationAdapter {
         assetManager.load("models/items.g3db", Model.class);
         loading = true;
 
-        Model whiteGround = new GroundBlockModel(new GroundBlock(GroundBlock.Type.DebugWhite));
-        Model grayGround = new GroundBlockModel(new GroundBlock(GroundBlock.Type.DebugGray));
-
-        int numTileVerticalHalf = numTileVertical / 2;
-        int numTileHorizontalHalf = numTileHorizontal / 2;
-        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
-            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
-                Model model = (x + z % 2) % 2 == 0 ? whiteGround : grayGround;
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform
-                        .translate(x * GroundBlockModel.SIZE, -32 / 2, z * GroundBlockModel.SIZE);
-                instances.add(instance);
-            }
-        }
-
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
@@ -130,6 +112,9 @@ public class BlueRobe extends ApplicationAdapter {
 
         gameMaster = new GameMaster(input.getActions());
         cameraMan = new CameraMan(camera, gameMaster.getCharacter());
+        groundlayouter = new Groundlayouter(gameMaster.getGround());
+
+        groundlayouter.layoutGround();
     }
 
     @Override
@@ -152,19 +137,24 @@ public class BlueRobe extends ApplicationAdapter {
 
         shadowLight.begin(Vector3.Zero, camera.direction);
         shadowBatch.begin(shadowLight.getCamera());
-        shadowBatch.render(instances);
+        if (characterInstance != null) {
+            shadowBatch.render(characterInstance);
+        }
+        shadowBatch.render(groundlayouter.getBlockInstances());
         shadowBatch.end();
         shadowLight.end();
 
         modelBatch.begin(camera);
-        modelBatch.render(instances, environment);
+        if (characterInstance != null) {
+            modelBatch.render(characterInstance, environment);
+        }
+        modelBatch.render(groundlayouter.getBlockInstances(), environment);
         modelBatch.end();
     }
 
     @Override
     public void dispose() {
         modelBatch.dispose();
-        instances.clear();
         animationControllers.clear();
         assetManager.dispose();
     }

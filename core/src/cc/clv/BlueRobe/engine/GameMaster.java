@@ -14,6 +14,8 @@ public class GameMaster {
     @lombok.Getter
     private final Character character;
 
+    private final GroundGenerator groundGenerator;
+
     public GameMaster(Observable<BlueRobe.Action> actionObservable) {
         actionObservable.subscribe(new Action1<BlueRobe.Action>() {
             @Override
@@ -22,5 +24,10 @@ public class GameMaster {
         });
         this.actionObservable = actionObservable;
         this.character = new Character(actionObservable);
+        this.groundGenerator = new GroundGenerator();
+    }
+
+    public Ground getGround() {
+        return this.groundGenerator.getGround();
     }
 }
