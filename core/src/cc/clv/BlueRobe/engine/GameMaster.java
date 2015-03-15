@@ -19,7 +19,7 @@ public class GameMaster {
         GROUND_SPAWN_NEW_LINE,
     }
 
-    public static final float GROUND_LINE_SPAWN_INTERVAL = 0.5f;
+    public static final float GROUND_LINE_SPAWN_INTERVAL = 0.3f;
 
     private Observable<Action> input;
 

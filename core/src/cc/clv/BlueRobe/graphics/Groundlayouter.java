@@ -1,6 +1,7 @@
 package cc.clv.BlueRobe.graphics;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.LinkedList;
 
@@ -22,7 +23,8 @@ public class Groundlayouter {
     private final int capacity = GroundLine.NUM_BLOCKS * Ground.NUM_LINES;
 
     @lombok.Getter
-    private final LinkedList<ModelInstance> blockInstances = new LinkedList<ModelInstance>();
+    private final LinkedList<GroundBlockModelInstance> blockInstances
+            = new LinkedList<GroundBlockModelInstance>();
 
     public Groundlayouter(Ground ground) {
         ground.getNewLines().subscribe(lineLayouter);
@@ -36,21 +38,29 @@ public class Groundlayouter {
     }
 
     public void update(float deltaTime) {
-        Observable.from(blockInstances).subscribe(new BlockForwarder(deltaTime));
+        float distance = (deltaTime / GameMaster.GROUND_LINE_SPAWN_INTERVAL)
+                * GroundBlockModel.SIZE;
+        Observable.from(blockInstances).subscribe(new BlockForwarder(distance));
+
+        float gap = (Ground.NUM_LINES / 2 * GroundBlockModel.SIZE) - blockInstances
+                .getFirst().transform.getTranslation(new Vector3()).z;
+        if (Math.abs(gap) > GroundBlockModel.SIZE) {
+            Observable.from(blockInstances)
+                    .subscribe(new BlockForwarder(gap % GroundBlockModel.SIZE));
+        }
     }
 
     private class BlockForwarder implements Action1<ModelInstance> {
 
-        private final float deltaTime;
+        private final float distanceZ;
 
-        public BlockForwarder(float deltaTime) {
-            this.deltaTime = deltaTime;
+        public BlockForwarder(float distanceZ) {
+            this.distanceZ = distanceZ;
         }
 
         @Override
         public void call(ModelInstance modelInstance) {
-            modelInstance.transform.translate(0, 0,
-                    (deltaTime / GameMaster.GROUND_LINE_SPAWN_INTERVAL) * GroundBlockModel.SIZE);
+            modelInstance.transform.translate(0, 0, distanceZ);
         }
     }
 
@@ -70,10 +80,13 @@ public class Groundlayouter {
             public void call(GroundBlockModelInstance modelInstance) {
                 GroundBlock groundBlock = modelInstance.getGroundBlock();
 
-                float z = groundBlock.isInitial() ?
-                        ((Ground.NUM_LINES / 2) - groundBlock.getLineIndex())
-                                * GroundBlockModel.SIZE
-                        : -(Ground.NUM_LINES / 2 - 1) * GroundBlockModel.SIZE;
+                float z = ((Ground.NUM_LINES / 2) - groundBlock.getLineIndex())
+                        * GroundBlockModel.SIZE;
+                if (!groundBlock.isInitial()) {
+                    GroundBlockModelInstance prevBlock = blockInstances
+                            .get((Ground.NUM_LINES - 1) * GroundLine.NUM_BLOCKS);
+                    z = prevBlock.transform.getTranslation(new Vector3()).z - GroundBlockModel.SIZE;
+                }
                 float y = -GroundBlockModel.HEIGHT / 2;
                 float x = (groundBlock.getIndex() - GroundLine.NUM_BLOCKS / 2)
                         * GroundBlockModel.SIZE;
