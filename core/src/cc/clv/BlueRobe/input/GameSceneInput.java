@@ -74,6 +74,11 @@ public class GameSceneInput extends InputMultiplexer {
 
         @Override
         public boolean keyDown(int keycode) {
+            switch (keycode) {
+                case Input.Keys.SPACE:
+                    subject.onNext(BlueRobe.Action.CHARACTER_PREPARE_JUMP);
+                    break;
+            }
             return false;
         }
 
@@ -87,6 +92,9 @@ public class GameSceneInput extends InputMultiplexer {
                 case Input.Keys.D:
                 case Input.Keys.RIGHT:
                     subject.onNext(BlueRobe.Action.CHARACTER_MOVE_RIGHT);
+                    break;
+                case Input.Keys.SPACE:
+                    subject.onNext(BlueRobe.Action.CHARACTER_JUMP);
                     break;
             }
             return false;
