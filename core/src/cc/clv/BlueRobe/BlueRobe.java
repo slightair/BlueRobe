@@ -24,14 +24,6 @@ import cc.clv.BlueRobe.input.GameSceneInput;
 
 public class BlueRobe extends ApplicationAdapter {
 
-    public enum Action {
-        CHARACTER_MOVE_LEFT,
-        CHARACTER_MOVE_RIGHT,
-        CHARACTER_PREPARE_JUMP,
-        CHARACTER_JUMP,
-        CHARACTER_CANCEL_JUMP,
-    }
-
     public Environment environment;
     public DirectionalShadowLight shadowLight;
     public OrthographicCamera camera;
@@ -128,6 +120,10 @@ public class BlueRobe extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         float deltaTime = Gdx.graphics.getDeltaTime();
+
+        gameMaster.update(deltaTime);
+        groundlayouter.update(deltaTime);
+
         for (AnimationController animationController : animationControllers) {
             animationController.update(deltaTime);
         }

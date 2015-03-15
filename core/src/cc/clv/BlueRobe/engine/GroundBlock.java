@@ -15,4 +15,11 @@ public class GroundBlock {
     Type type;
     int index;
     int lineIndex;
+
+    @lombok.Getter(lombok.AccessLevel.NONE)
+    boolean initial;
+
+    public boolean isInitial() {
+        return initial;
+    }
 }

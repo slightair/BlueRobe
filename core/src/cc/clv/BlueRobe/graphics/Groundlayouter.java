@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
 import java.util.LinkedList;
 
+import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.engine.Ground;
 import cc.clv.BlueRobe.engine.GroundBlock;
 import cc.clv.BlueRobe.engine.GroundLine;
@@ -19,8 +20,6 @@ public class Groundlayouter {
     private final Ground ground;
     private final LineLayouter lineLayouter = new LineLayouter();
     private final int capacity = GroundLine.NUM_BLOCKS * Ground.NUM_LINES;
-    private int lineCount = 0;
-    private int firstLineIndex = 0;
 
     @lombok.Getter
     private final LinkedList<ModelInstance> blockInstances = new LinkedList<ModelInstance>();
@@ -36,9 +35,28 @@ public class Groundlayouter {
         Observable.from(ground.getLines()).subscribe(lineLayouter);
     }
 
-    class LineLayouter implements Action1<GroundLine> {
+    public void update(float deltaTime) {
+        Observable.from(blockInstances).subscribe(new BlockForwarder(deltaTime));
+    }
 
-        class ModelInstanceCreator implements Func1<GroundBlock, GroundBlockModelInstance> {
+    private class BlockForwarder implements Action1<ModelInstance> {
+
+        private final float deltaTime;
+
+        public BlockForwarder(float deltaTime) {
+            this.deltaTime = deltaTime;
+        }
+
+        @Override
+        public void call(ModelInstance modelInstance) {
+            modelInstance.transform.translate(0, 0,
+                    (deltaTime / GameMaster.GROUND_LINE_SPAWN_INTERVAL) * GroundBlockModel.SIZE);
+        }
+    }
+
+    private class LineLayouter implements Action1<GroundLine> {
+
+        private class ModelInstanceCreator implements Func1<GroundBlock, GroundBlockModelInstance> {
 
             @Override
             public GroundBlockModelInstance call(GroundBlock groundBlock) {
@@ -46,14 +64,16 @@ public class Groundlayouter {
             }
         }
 
-        class BlockLayouter implements Action1<GroundBlockModelInstance> {
+        private class BlockLayouter implements Action1<GroundBlockModelInstance> {
 
             @Override
             public void call(GroundBlockModelInstance modelInstance) {
                 GroundBlock groundBlock = modelInstance.getGroundBlock();
 
-                int lineIndex = groundBlock.getLineIndex() - firstLineIndex;
-                float z = -(lineIndex - Ground.NUM_LINES / 2) * GroundBlockModel.SIZE;
+                float z = groundBlock.isInitial() ?
+                        ((Ground.NUM_LINES / 2) - groundBlock.getLineIndex())
+                                * GroundBlockModel.SIZE
+                        : -(Ground.NUM_LINES / 2 - 1) * GroundBlockModel.SIZE;
                 float y = -GroundBlockModel.HEIGHT / 2;
                 float x = (groundBlock.getIndex() - GroundLine.NUM_BLOCKS / 2)
                         * GroundBlockModel.SIZE;
@@ -69,11 +89,6 @@ public class Groundlayouter {
 
         @Override
         public void call(GroundLine groundLine) {
-            lineCount++;
-            if (lineCount > Ground.NUM_LINES) {
-                firstLineIndex++;
-            }
-
             Observable.from(groundLine.getBlocks())
                     .map(new ModelInstanceCreator())
                     .subscribe(new BlockLayouter());

@@ -1,6 +1,6 @@
 package cc.clv.BlueRobe.engine;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -15,13 +15,21 @@ public class Ground {
     private final PublishSubject<GroundLine> subject = PublishSubject.create();
 
     @lombok.Getter
-    private final ArrayList<GroundLine> lines;
+    private final LinkedList<GroundLine> lines;
 
     public Observable<GroundLine> getNewLines() {
         return subject;
     }
 
-    public Ground(ArrayList<GroundLine> lines) {
+    public Ground(LinkedList<GroundLine> lines) {
         this.lines = lines;
+    }
+
+    public void putLine(GroundLine line) {
+        lines.addLast(line);
+        if (lines.size() > NUM_LINES) {
+            lines.removeFirst();
+        }
+        subject.onNext(line);
     }
 }

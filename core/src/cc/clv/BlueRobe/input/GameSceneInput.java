@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 
-import cc.clv.BlueRobe.BlueRobe;
+import cc.clv.BlueRobe.engine.GameMaster;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -21,13 +21,13 @@ public class GameSceneInput extends InputMultiplexer {
 
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
-            subject.onNext(BlueRobe.Action.CHARACTER_PREPARE_JUMP);
+            subject.onNext(GameMaster.Action.CHARACTER_PREPARE_JUMP);
             return false;
         }
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
-            subject.onNext(BlueRobe.Action.CHARACTER_JUMP);
+            subject.onNext(GameMaster.Action.CHARACTER_JUMP);
             return false;
         }
 
@@ -39,9 +39,9 @@ public class GameSceneInput extends InputMultiplexer {
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
             if (velocityX > flingThreshold) {
-                subject.onNext(BlueRobe.Action.CHARACTER_MOVE_RIGHT);
+                subject.onNext(GameMaster.Action.CHARACTER_MOVE_RIGHT);
             } else if (velocityX < -flingThreshold) {
-                subject.onNext(BlueRobe.Action.CHARACTER_MOVE_LEFT);
+                subject.onNext(GameMaster.Action.CHARACTER_MOVE_LEFT);
             }
 
             return false;
@@ -54,7 +54,7 @@ public class GameSceneInput extends InputMultiplexer {
 
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
-            subject.onNext(BlueRobe.Action.CHARACTER_CANCEL_JUMP);
+            subject.onNext(GameMaster.Action.CHARACTER_CANCEL_JUMP);
             return false;
         }
 
@@ -76,7 +76,7 @@ public class GameSceneInput extends InputMultiplexer {
         public boolean keyDown(int keycode) {
             switch (keycode) {
                 case Input.Keys.SPACE:
-                    subject.onNext(BlueRobe.Action.CHARACTER_PREPARE_JUMP);
+                    subject.onNext(GameMaster.Action.CHARACTER_PREPARE_JUMP);
                     break;
             }
             return false;
@@ -87,14 +87,14 @@ public class GameSceneInput extends InputMultiplexer {
             switch (keycode) {
                 case Input.Keys.A:
                 case Input.Keys.LEFT:
-                    subject.onNext(BlueRobe.Action.CHARACTER_MOVE_LEFT);
+                    subject.onNext(GameMaster.Action.CHARACTER_MOVE_LEFT);
                     break;
                 case Input.Keys.D:
                 case Input.Keys.RIGHT:
-                    subject.onNext(BlueRobe.Action.CHARACTER_MOVE_RIGHT);
+                    subject.onNext(GameMaster.Action.CHARACTER_MOVE_RIGHT);
                     break;
                 case Input.Keys.SPACE:
-                    subject.onNext(BlueRobe.Action.CHARACTER_JUMP);
+                    subject.onNext(GameMaster.Action.CHARACTER_JUMP);
                     break;
             }
             return false;
@@ -131,14 +131,14 @@ public class GameSceneInput extends InputMultiplexer {
         }
     }
 
-    private final PublishSubject<BlueRobe.Action> subject = PublishSubject.create();
+    private final PublishSubject<GameMaster.Action> subject = PublishSubject.create();
 
     public GameSceneInput() {
         addProcessor(new GestureDetector(new GestureListener()));
         addProcessor(new KeyboardInputProcessor());
     }
 
-    public Observable<BlueRobe.Action> getActions() {
+    public Observable<GameMaster.Action> getActions() {
         return subject;
     }
 }
