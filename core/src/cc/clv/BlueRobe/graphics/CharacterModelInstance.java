@@ -57,7 +57,6 @@ public class CharacterModelInstance extends ModelInstance {
         });
 
         animationController = new AnimationController(this);
-        animationController.allowSameAnimation = true;
     }
 
     public static CharacterModelInstance create(Character character,
