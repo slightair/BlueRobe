@@ -11,15 +11,13 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.graphics.CameraMan;
 import cc.clv.BlueRobe.graphics.CharacterModelInstance;
-import cc.clv.BlueRobe.graphics.Groundlayouter;
+import cc.clv.BlueRobe.graphics.GroundLayouter;
 import cc.clv.BlueRobe.input.GameSceneInput;
 
 public class BlueRobe extends ApplicationAdapter {
@@ -30,18 +28,16 @@ public class BlueRobe extends ApplicationAdapter {
     public ModelBatch modelBatch;
     public ModelBatch shadowBatch;
     public AssetManager assetManager;
-    public Array<AnimationController> animationControllers = new Array<AnimationController>();
     public boolean loading;
 
     private CharacterModelInstance characterInstance;
-    private Groundlayouter groundlayouter;
+    private GroundLayouter groundLayouter;
     private CameraMan cameraMan;
     private GameMaster gameMaster;
 
     private void doneLoading() {
         characterInstance = CharacterModelInstance.create(gameMaster.getCharacter(),
                 assetManager);
-        animationControllers.add(characterInstance.getAnimationController());
 
 //        Model item = assetManager.get("models/items.g3db", Model.class);
 //        item.animations.add(new StretchAnimation(item.getNode("mushroom")));
@@ -70,8 +66,7 @@ public class BlueRobe extends ApplicationAdapter {
         loading = false;
     }
 
-    @Override
-    public void create() {
+    private void setUpEnvironment() {
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 1f));
         DirectionalLight directionalLight = new DirectionalLight()
@@ -81,6 +76,11 @@ public class BlueRobe extends ApplicationAdapter {
         shadowLight.set(directionalLight);
         environment.shadowMap = shadowLight;
 
+        modelBatch = new ModelBatch();
+        shadowBatch = new ModelBatch(new DepthShaderProvider());
+    }
+
+    private void setUpCamera() {
         float viewportSize = 128.0f;
         float aspectRatio = Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
         camera = new OrthographicCamera(viewportSize, viewportSize * 2 * aspectRatio);
@@ -89,24 +89,58 @@ public class BlueRobe extends ApplicationAdapter {
         camera.lookAt(0, 0, 0);
         camera.near = -100f;
         camera.far = 300f;
+    }
+
+    private void updateModels(float deltaTime) {
+        gameMaster.update(deltaTime);
+        groundLayouter.update(deltaTime);
+
+        if (characterInstance != null) {
+            characterInstance.getAnimationController().update(deltaTime);
+        }
+
+        cameraMan.update(deltaTime);
         camera.update();
+    }
+
+    private void renderModelShadows() {
+        shadowLight.begin(Vector3.Zero, camera.direction);
+        shadowBatch.begin(shadowLight.getCamera());
+        if (characterInstance != null) {
+            shadowBatch.render(characterInstance);
+        }
+        shadowBatch.render(groundLayouter.getBlockInstances());
+        shadowBatch.end();
+        shadowLight.end();
+    }
+
+    private void renderModels() {
+        modelBatch.begin(camera);
+        if (characterInstance != null) {
+            modelBatch.render(characterInstance, environment);
+        }
+        modelBatch.render(groundLayouter.getBlockInstances(), environment);
+        modelBatch.end();
+    }
+
+    @Override
+    public void create() {
+        setUpEnvironment();
+        setUpCamera();
 
         assetManager = new AssetManager();
         assetManager.load("models/hikari.g3db", Model.class);
         assetManager.load("models/items.g3db", Model.class);
         loading = true;
 
-        modelBatch = new ModelBatch();
-        shadowBatch = new ModelBatch(new DepthShaderProvider());
-
         GameSceneInput input = new GameSceneInput();
         Gdx.input.setInputProcessor(input);
 
         gameMaster = new GameMaster(input.getActions());
         cameraMan = new CameraMan(camera, gameMaster.getCharacter());
-        groundlayouter = new Groundlayouter(gameMaster.getGround());
+        groundLayouter = new GroundLayouter(gameMaster.getGround());
 
-        groundlayouter.layoutGround();
+        groundLayouter.layoutGround();
     }
 
     @Override
@@ -119,39 +153,15 @@ public class BlueRobe extends ApplicationAdapter {
         Gdx.gl.glClearColor(0.12f, 0.56f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        float deltaTime = Gdx.graphics.getDeltaTime();
+        updateModels(Gdx.graphics.getDeltaTime());
 
-        gameMaster.update(deltaTime);
-        groundlayouter.update(deltaTime);
-
-        for (AnimationController animationController : animationControllers) {
-            animationController.update(deltaTime);
-        }
-
-        cameraMan.update(deltaTime);
-        camera.update();
-
-        shadowLight.begin(Vector3.Zero, camera.direction);
-        shadowBatch.begin(shadowLight.getCamera());
-        if (characterInstance != null) {
-            shadowBatch.render(characterInstance);
-        }
-        shadowBatch.render(groundlayouter.getBlockInstances());
-        shadowBatch.end();
-        shadowLight.end();
-
-        modelBatch.begin(camera);
-        if (characterInstance != null) {
-            modelBatch.render(characterInstance, environment);
-        }
-        modelBatch.render(groundlayouter.getBlockInstances(), environment);
-        modelBatch.end();
+        renderModelShadows();
+        renderModels();
     }
 
     @Override
     public void dispose() {
         modelBatch.dispose();
-        animationControllers.clear();
         assetManager.dispose();
     }
 

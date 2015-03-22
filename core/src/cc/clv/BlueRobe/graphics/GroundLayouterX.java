@@ -16,7 +16,7 @@ import rx.functions.Func1;
 /**
  * Created by slightair on 15/02/22.
  */
-public class Groundlayouter {
+public class GroundLayouter {
 
     private final Ground ground;
     private final LineLayouter lineLayouter = new LineLayouter();
@@ -26,7 +26,7 @@ public class Groundlayouter {
     private final LinkedList<GroundBlockModelInstance> blockInstances
             = new LinkedList<GroundBlockModelInstance>();
 
-    public Groundlayouter(Ground ground) {
+    public GroundLayouter(Ground ground) {
         ground.getNewLines().subscribe(lineLayouter);
         this.ground = ground;
     }
