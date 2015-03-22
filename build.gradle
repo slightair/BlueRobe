@@ -90,6 +90,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile 'io.reactivex:rxjava:1.0.0'
+        compile 'com.squareup.dagger:dagger:1.2.2'
+        compile 'com.squareup.dagger:dagger-compiler:1.2.2'
         provided 'org.projectlombok:lombok:1.16.2'
         compile fileTree(dir: '../libs', include: '*.jar')
     }
