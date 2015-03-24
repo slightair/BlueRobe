@@ -50,6 +50,7 @@ public class CameraMan {
 
     public void update(float deltaTime) {
         tweenManager.update(deltaTime);
+        camera.update();
     }
 
     private class CameraTween implements TweenAccessor<OrthographicCamera> {

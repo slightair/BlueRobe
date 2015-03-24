@@ -1,16 +1,12 @@
 package cc.clv.BlueRobe.graphics;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 
 import cc.clv.BlueRobe.engine.Character;
-import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
-import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 import rx.functions.Action1;
 
 /**
@@ -23,7 +19,7 @@ public class CharacterModelInstance extends ModelInstance {
     @lombok.Getter
     private final AnimationController animationController;
 
-    public CharacterModelInstance(Model model, Character character) {
+    public CharacterModelInstance(Character character, Model model) {
         super(model);
 
         this.character = character;
@@ -59,15 +55,8 @@ public class CharacterModelInstance extends ModelInstance {
         animationController = new AnimationController(this);
     }
 
-    public static CharacterModelInstance create(Character character,
-            AssetManager assetManager) {
-
-        Model model = assetManager.get("models/hikari.g3db", Model.class);
-        Node rootNode = model.getNode("hikari_root");
-        model.animations.add(new JumpAnimation(rootNode, 10.0f));
-        model.animations.add(new ShrinkAnimation(rootNode));
-        model.animations.add(new ReturnShrinkAnimation(rootNode));
-
-        return new CharacterModelInstance(model, character);
+    public static CharacterModelInstance create(Character character) {
+        Model model = AssetLoader.getInstance().getCharacterModel();
+        return new CharacterModelInstance(character, model);
     }
 }
