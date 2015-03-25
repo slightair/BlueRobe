@@ -28,7 +28,6 @@ public class GroundBlockModelInstance extends ModelInstance {
         this.groundBlock = groundBlock;
 
         animationController = new AnimationController(this);
-        animationController.allowSameAnimation = true;
     }
 
     public static GroundBlockModelInstance create(GroundBlock groundBlock) {

@@ -21,7 +21,6 @@ public class BlueRobe extends ApplicationAdapter {
     private OrthographicCamera camera;
     private ModelBatch modelBatch;
     private ModelBatch shadowBatch;
-
     private GameSceneDirector sceneDirector;
 
     private void setUpEnvironment() {

@@ -26,8 +26,8 @@ public class AssetLoader {
     }
 
     private final AssetManager assetManager = new AssetManager();
-    private PublishSubject<Float> progressSubject;
 
+    private PublishSubject<Float> progressSubject;
     private boolean completed = false;
 
     public Observable<Float> load() {
@@ -35,6 +35,7 @@ public class AssetLoader {
         assetManager.load("models/items.g3db", Model.class);
 
         progressSubject = PublishSubject.create();
+
         return progressSubject;
     }
 

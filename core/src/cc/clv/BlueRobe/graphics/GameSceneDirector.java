@@ -19,13 +19,11 @@ public class GameSceneDirector {
     private final GroundLayouter groundLayouter;
 
     @lombok.Getter
-    private final GameSceneInput input;
+    private final GameSceneInput input = new GameSceneInput();
 
     private CharacterModelInstance characterInstance;
 
     public GameSceneDirector(OrthographicCamera camera) {
-        input = new GameSceneInput();
-
         gameMaster = new GameMaster(input.getActions());
         cameraMan = new CameraMan(camera, gameMaster.getCharacter());
         groundLayouter = new GroundLayouter(gameMaster.getGround());
