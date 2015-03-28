@@ -3,7 +3,9 @@ package cc.clv.BlueRobe.graphics;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.engine.Ground;
@@ -22,9 +24,8 @@ public class GroundLayouter {
     private final LineLayouter lineLayouter = new LineLayouter();
     private final int capacity = GroundLine.NUM_BLOCKS * Ground.NUM_LINES;
 
-    @lombok.Getter
-    private final LinkedList<GroundBlockModelInstance> blockInstances
-            = new LinkedList<GroundBlockModelInstance>();
+    private final LinkedList<ModelInstanceGroup> modelInstanceGroups
+            = new LinkedList<ModelInstanceGroup>();
 
     public GroundLayouter(Ground ground) {
         ground.getNewLines().subscribe(lineLayouter);
@@ -50,6 +51,21 @@ public class GroundLayouter {
         }
     }
 
+    public List<ModelInstance> getModelInstances() {
+        return Observable.from(modelInstanceGroups)
+                .map(new Func1<ModelInstanceGroup, ArrayList<ModelInstance>>() {
+                    @Override
+                    public ArrayList<ModelInstance> call(ModelInstanceGroup instanceGroup) {
+                        return instanceGroup.getInstances();
+                    }
+                }).flatMap(new Func1<ArrayList<ModelInstance>, Observable<ModelInstance>>() {
+                    @Override
+                    public Observable<ModelInstance> call(ArrayList<ModelInstance> modelInstances) {
+                        return Observable.from(modelInstances);
+                    }
+                }).toList().toBlocking().single();
+    }
+
     private class BlockForwarder implements Action1<ModelInstance> {
 
         private final float distanceZ;
@@ -66,36 +82,48 @@ public class GroundLayouter {
 
     private class LineLayouter implements Action1<GroundLine> {
 
-        private class ModelInstanceCreator implements Func1<GroundBlock, GroundBlockModelInstance> {
+        private class ModelInstanceGroupCreator implements Func1<GroundBlock, ModelInstanceGroup> {
 
             @Override
-            public GroundBlockModelInstance call(GroundBlock groundBlock) {
-                return GroundBlockModelInstance.create(groundBlock);
+            public ModelInstanceGroup call(GroundBlock groundBlock) {
+                ModelInstanceGroup instanceGroup = new ModelInstanceGroup();
+
+                instanceGroup.add(GroundBlockModelInstance.create(groundBlock));
+
+                return instanceGroup;
             }
         }
 
-        private class BlockLayouter implements Action1<GroundBlockModelInstance> {
+        private class InstanceGroupLayouter implements Action1<ModelInstanceGroup> {
 
             @Override
-            public void call(GroundBlockModelInstance modelInstance) {
-                GroundBlock groundBlock = modelInstance.getGroundBlock();
+            public void call(ModelInstanceGroup instanceGroup) {
 
-                float z = ((Ground.NUM_LINES / 2) - groundBlock.getLineIndex())
-                        * GroundBlockModel.SIZE;
-                if (!groundBlock.isInitial()) {
-                    GroundBlockModelInstance prevBlock = blockInstances
-                            .get((Ground.NUM_LINES - 1) * GroundLine.NUM_BLOCKS);
-                    z = prevBlock.transform.getTranslation(new Vector3()).z - GroundBlockModel.SIZE;
-                }
-                float y = -GroundBlockModel.HEIGHT / 2;
-                float x = (groundBlock.getIndex() - GroundLine.NUM_BLOCKS / 2)
-                        * GroundBlockModel.SIZE;
+                for (ModelInstance instance : instanceGroup.getInstances()) {
+                    if (instance.getClass() == GroundBlockModelInstance.class) {
+                        GroundBlockModelInstance modelInstance
+                                = (GroundBlockModelInstance) instance;
+                        GroundBlock groundBlock = modelInstance.getGroundBlock();
 
-                modelInstance.transform.translate(x, y, z);
-                blockInstances.addLast(modelInstance);
+                        float z = ((Ground.NUM_LINES / 2) - groundBlock.getLineIndex())
+                                * GroundBlockModel.SIZE;
+                        if (!groundBlock.isInitial()) {
+                            GroundBlockModelInstance prevBlock = blockInstances
+                                    .get((Ground.NUM_LINES - 1) * GroundLine.NUM_BLOCKS);
+                            z = prevBlock.transform.getTranslation(new Vector3()).z
+                                    - GroundBlockModel.SIZE;
+                        }
+                        float y = -GroundBlockModel.HEIGHT / 2;
+                        float x = (groundBlock.getIndex() - GroundLine.NUM_BLOCKS / 2)
+                                * GroundBlockModel.SIZE;
 
-                if (blockInstances.size() > capacity) {
-                    blockInstances.removeFirst();
+                        modelInstance.transform.translate(x, y, z);
+                        blockInstances.addLast(modelInstance);
+
+                        if (blockInstances.size() > capacity) {
+                            blockInstances.removeFirst();
+                        }
+                    }
                 }
             }
         }
@@ -103,8 +131,8 @@ public class GroundLayouter {
         @Override
         public void call(GroundLine groundLine) {
             Observable.from(groundLine.getBlocks())
-                    .map(new ModelInstanceCreator())
-                    .subscribe(new BlockLayouter());
+                    .map(new ModelInstanceGroupCreator())
+                    .subscribe(new InstanceGroupLayouter());
         }
     }
 }

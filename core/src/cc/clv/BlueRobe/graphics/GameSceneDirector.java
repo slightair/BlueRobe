@@ -75,7 +75,7 @@ public class GameSceneDirector {
         if (characterInstance != null) {
             list.add(characterInstance);
         }
-        list.addAll(groundLayouter.getBlockInstances());
+        list.addAll(groundLayouter.getModelInstances());
 
         return list;
     }
