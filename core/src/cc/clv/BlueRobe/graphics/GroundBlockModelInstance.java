@@ -11,12 +11,11 @@ import cc.clv.BlueRobe.engine.GroundBlock;
 /**
  * Created by slightair on 15/03/14.
  */
-public class GroundBlockModelInstance extends ModelInstance {
+public class GroundBlockModelInstance extends ModelInstance implements AnimatableModelInstance {
 
     @lombok.Getter
     private final GroundBlock groundBlock;
 
-    @lombok.Getter
     private final AnimationController animationController;
 
     private final static HashMap<GroundBlock.Type, Model> modelHashMap
@@ -28,7 +27,6 @@ public class GroundBlockModelInstance extends ModelInstance {
         this.groundBlock = groundBlock;
 
         animationController = new AnimationController(this);
-        animationController.allowSameAnimation = true;
     }
 
     public static GroundBlockModelInstance create(GroundBlock groundBlock) {
@@ -41,5 +39,10 @@ public class GroundBlockModelInstance extends ModelInstance {
         }
 
         return new GroundBlockModelInstance(blockModel, groundBlock);
+    }
+
+    @Override
+    public void updateAnimation(float deltaTime) {
+        animationController.update(deltaTime);
     }
 }

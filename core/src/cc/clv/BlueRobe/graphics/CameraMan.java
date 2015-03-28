@@ -16,6 +16,7 @@ import rx.functions.Action1;
 public class CameraMan {
 
     private static final float cameraMoveDuration = 0.5f;
+
     private final OrthographicCamera camera;
     private final Character character;
     private final TweenManager tweenManager = new TweenManager();
@@ -50,6 +51,7 @@ public class CameraMan {
 
     public void update(float deltaTime) {
         tweenManager.update(deltaTime);
+        camera.update();
     }
 
     private class CameraTween implements TweenAccessor<OrthographicCamera> {

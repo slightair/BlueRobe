@@ -21,22 +21,22 @@ public class GameMaster {
 
     public static final float GROUND_LINE_SPAWN_INTERVAL = 0.3f;
 
-    private Observable<Action> input;
+    private final Observable<Action> input;
 
     @lombok.Getter
     private final Character character;
 
-    private final GroundGenerator groundGenerator;
-    private PublishSubject<Action> actionSubject = PublishSubject.create();
-
-    private PublishSubject<Float> updateSubject = PublishSubject.create();
-    private Observable<Float> timeline = updateSubject.scan(new Func2<Float, Float, Float>() {
+    private final GroundGenerator groundGenerator = new GroundGenerator();
+    private final PublishSubject<Action> actionSubject = PublishSubject.create();
+    private final PublishSubject<Float> updateSubject = PublishSubject.create();
+    private final Observable<Float> timeline = updateSubject.scan(new Func2<Float, Float, Float>() {
         @Override
         public Float call(Float aFloat, Float aFloat2) {
             return aFloat + aFloat2;
         }
     });
-    private GroundLineEmitter groundLineEmitter;
+    private final GroundLineEmitter groundLineEmitter =
+            new GroundLineEmitter(timeline, GROUND_LINE_SPAWN_INTERVAL);
 
     private class ActionProcessor implements Action1<Action> {
 
@@ -80,8 +80,6 @@ public class GameMaster {
     public GameMaster(Observable<Action> input) {
         this.input = input;
         this.character = new Character(input);
-        this.groundGenerator = new GroundGenerator();
-        this.groundLineEmitter = new GroundLineEmitter(timeline, GROUND_LINE_SPAWN_INTERVAL);
 
         actionSubject
                 .mergeWith(input)

@@ -10,19 +10,19 @@ import rx.subjects.PublishSubject;
  */
 public class Ground {
 
-    public static int NUM_LINES = 24;
+    public static final int NUM_LINES = 24;
 
     private final PublishSubject<GroundLine> subject = PublishSubject.create();
 
     @lombok.Getter
     private final LinkedList<GroundLine> lines;
 
-    public Observable<GroundLine> getNewLines() {
-        return subject;
-    }
-
     public Ground(LinkedList<GroundLine> lines) {
         this.lines = lines;
+    }
+
+    public Observable<GroundLine> getNewLines() {
+        return subject;
     }
 
     public void putLine(GroundLine line) {

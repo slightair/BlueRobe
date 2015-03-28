@@ -19,6 +19,8 @@ public class GroundBlock {
     @lombok.Getter(lombok.AccessLevel.NONE)
     boolean initial;
 
+    Item item;
+
     public boolean isInitial() {
         return initial;
     }

@@ -19,6 +19,7 @@ public class GroundBlockModel extends Model {
 
     public static final float SIZE = 16f;
     public static final float HEIGHT = 32f;
+
     private final GroundBlock.Type blockType;
 
     public GroundBlockModel(GroundBlock.Type blockType) {
