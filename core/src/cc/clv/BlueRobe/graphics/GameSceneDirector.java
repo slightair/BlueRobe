@@ -14,18 +14,19 @@ import rx.Observer;
  */
 public class GameSceneDirector {
 
+    private final OrthographicCamera camera;
     private final GameMaster gameMaster;
-    private final CameraMan cameraMan;
     private final GroundLayouter groundLayouter;
 
     @lombok.Getter
     private final GameSceneInput input = new GameSceneInput();
 
     private CharacterModelInstance characterInstance;
+    private CameraMan cameraMan;
 
     public GameSceneDirector(OrthographicCamera camera) {
+        this.camera = camera;
         gameMaster = new GameMaster(input.getActions());
-        cameraMan = new CameraMan(camera, gameMaster.getCharacter());
         groundLayouter = new GroundLayouter(gameMaster.getGround());
 
         AssetLoader assetLoader = AssetLoader.getInstance();
@@ -51,6 +52,7 @@ public class GameSceneDirector {
 
     private void doneLoading() {
         characterInstance = CharacterModelInstance.create(gameMaster.getCharacter());
+        cameraMan = new CameraMan(camera, characterInstance);
     }
 
     public void update(float deltaTime) {
@@ -64,9 +66,9 @@ public class GameSceneDirector {
             groundLayouter.update(deltaTime);
 
             characterInstance.updateAnimation(deltaTime);
-        }
 
-        cameraMan.update(deltaTime);
+            cameraMan.update(deltaTime);
+        }
     }
 
     public ArrayList<ModelInstance> modelInstances() {

@@ -2,6 +2,7 @@ package cc.clv.BlueRobe.graphics;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector3;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenAccessor;
@@ -15,36 +16,32 @@ import rx.functions.Action1;
  */
 public class CameraMan {
 
-    private static final float cameraMoveDuration = 0.5f;
+    private static final float cameraMoveDuration = 0.3f;
 
     private final OrthographicCamera camera;
-    private final Character character;
+    private final float cameraDefaultX;
+    private final CharacterModelInstance characterModelInstance;
     private final TweenManager tweenManager = new TweenManager();
 
-    public CameraMan(final OrthographicCamera camera, Character character) {
+    public CameraMan(final OrthographicCamera camera,
+            final CharacterModelInstance characterModelInstance) {
         this.camera = camera;
-        this.character = character;
+        this.cameraDefaultX = camera.position.x;
+        this.characterModelInstance = characterModelInstance;
 
-        character.getActions().subscribe(new Action1<Character.Action>() {
-            @Override
-            public void call(Character.Action action) {
-                switch (action) {
+        characterModelInstance.getCharacter().getActions()
+                .subscribe(new Action1<Character.Action>() {
+                    @Override
+                    public void call(Character.Action action) {
+                        Vector3 characterPosition = characterModelInstance.transform
+                                .getTranslation(new Vector3());
 
-                    case MOVE_LEFT:
                         Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                                .targetRelative(-GroundBlockModel.SIZE)
+                                .target(characterPosition.x + cameraDefaultX)
                                 .ease(TweenEquations.easeOutExpo)
                                 .start(tweenManager);
-                        break;
-                    case MOVE_RIGHT:
-                        Tween.to(camera, CameraTween.POSITION_X, cameraMoveDuration)
-                                .targetRelative(GroundBlockModel.SIZE)
-                                .ease(TweenEquations.easeOutExpo)
-                                .start(tweenManager);
-                        break;
-                }
-            }
-        });
+                    }
+                });
 
         Tween.registerAccessor(Camera.class, new CameraTween());
     }

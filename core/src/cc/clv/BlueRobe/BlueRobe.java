@@ -46,6 +46,7 @@ public class BlueRobe extends ApplicationAdapter {
         camera.lookAt(0, 0, 0);
         camera.near = -100f;
         camera.far = 300f;
+        camera.update();
     }
 
     private void renderModelShadows() {

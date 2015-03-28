@@ -14,7 +14,9 @@ import rx.functions.Action1;
  */
 public class CharacterModelInstance extends ModelInstance implements AnimatableModelInstance {
 
+    @lombok.Getter
     private final Character character;
+
     private final AnimationController animationController;
 
     public CharacterModelInstance(Character character, Model model) {
