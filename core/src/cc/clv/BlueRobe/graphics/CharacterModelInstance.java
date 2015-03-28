@@ -12,11 +12,9 @@ import rx.functions.Action1;
 /**
  * Created by slightair on 15/02/27.
  */
-public class CharacterModelInstance extends ModelInstance {
+public class CharacterModelInstance extends ModelInstance implements AnimatableModelInstance {
 
     private final Character character;
-
-    @lombok.Getter
     private final AnimationController animationController;
 
     public CharacterModelInstance(Character character, Model model) {
@@ -58,5 +56,10 @@ public class CharacterModelInstance extends ModelInstance {
     public static CharacterModelInstance create(Character character) {
         Model model = AssetLoader.getInstance().getCharacterModel();
         return new CharacterModelInstance(character, model);
+    }
+
+    @Override
+    public void updateAnimation(float deltaTime) {
+        animationController.update(deltaTime);
     }
 }

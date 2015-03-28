@@ -63,7 +63,7 @@ public class GameSceneDirector {
             gameMaster.update(deltaTime);
             groundLayouter.update(deltaTime);
 
-            characterInstance.getAnimationController().update(deltaTime);
+            characterInstance.updateAnimation(deltaTime);
         }
 
         cameraMan.update(deltaTime);
@@ -75,7 +75,7 @@ public class GameSceneDirector {
         if (characterInstance != null) {
             list.add(characterInstance);
         }
-        list.addAll(groundLayouter.getBlockInstances());
+        list.addAll(groundLayouter.getModelInstances());
 
         return list;
     }

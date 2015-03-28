@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
+import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -48,12 +49,20 @@ public class AssetLoader {
         model.animations.add(new ReturnShrinkAnimation(node));
     }
 
+    private void setUpItemModel() {
+        Model model = getItemModel();
+
+        Node node = model.getNode("mushroom");
+        model.animations.add(new StretchAnimation(node));
+    }
+
     public void update() {
         completed = assetManager.update();
         progressSubject.onNext(assetManager.getProgress());
 
         if (completed) {
             setUpCharacterModel();
+            setUpItemModel();
 
             progressSubject.onCompleted();
         }
@@ -66,28 +75,8 @@ public class AssetLoader {
     public Model getCharacterModel() {
         return assetManager.get("models/hikari.g3db", Model.class);
     }
-}
 
-//        Model item = assetManager.get("models/items.g3db", Model.class);
-//        item.animations.add(new StretchAnimation(item.getNode("mushroom")));
-//
-//        public int numTileHorizontal = 9;
-//        public int numTileVertical = 24;
-//        int numTileVerticalHalf = numTileVertical / 2;
-//        int numTileHorizontalHalf = numTileHorizontal / 2;
-//        for (int z = -numTileVerticalHalf; z <= numTileVerticalHalf; z++) {
-//            for (int x = -numTileHorizontalHalf; x <= numTileHorizontalHalf; x++) {
-//                if (Math.random() > 0.1) {
-//                    continue;
-//                }
-//
-//                ModelInstance itemInstance = new ModelInstance(item, "mushroom");
-//                itemInstance.transform
-//                        .translate(x * GroundBlockModel.SIZE, 0, z * GroundBlockModel.SIZE);
-//                instances.add(itemInstance);
-//
-//                AnimationController animationController = new AnimationController(itemInstance);
-//                animationController.setAnimation("stretch", -1);
-//                animationControllers.add(animationController);
-//            }
-//        }
+    public Model getItemModel() {
+        return assetManager.get("models/items.g3db", Model.class);
+    }
+}

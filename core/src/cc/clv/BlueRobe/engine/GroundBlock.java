@@ -17,7 +17,9 @@ public class GroundBlock {
     int lineIndex;
 
     @lombok.Getter(lombok.AccessLevel.NONE)
-    private final boolean initial;
+    boolean initial;
+
+    Item item;
 
     public boolean isInitial() {
         return initial;
