@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
 
 import cc.clv.BlueRobe.graphics.GameSceneDirector;
+import cc.clv.BlueRobe.graphics.PhysicsMaster;
 
 public class BlueRobe extends ApplicationAdapter {
 
@@ -22,6 +24,7 @@ public class BlueRobe extends ApplicationAdapter {
     private ModelBatch modelBatch;
     private ModelBatch shadowBatch;
     private GameSceneDirector sceneDirector;
+    private PhysicsMaster physicsMaster;
 
     private void setUpEnvironment() {
         environment = new Environment();
@@ -65,8 +68,13 @@ public class BlueRobe extends ApplicationAdapter {
 
     @Override
     public void create() {
+        Bullet.init();
+
         setUpEnvironment();
         setUpCamera();
+
+        physicsMaster = new PhysicsMaster();
+        physicsMaster.setUpWorld();
 
         sceneDirector = new GameSceneDirector(camera);
         Gdx.input.setInputProcessor(sceneDirector.getInput());

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 
 import cc.clv.BlueRobe.engine.Character;
-import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import rx.functions.Action1;
 
 /**
@@ -42,8 +41,6 @@ public class CharacterModelInstance extends ModelInstance implements AnimatableM
                         break;
                     case JUMP:
                         animationController.animate("returnShrink", 0.0f);
-                        animationController.animate("jump",
-                                ReturnShrinkAnimation.defaultDuration);
                         break;
                     case CANCEL_JUMP:
                         animationController.animate("returnShrink", 0.0f);

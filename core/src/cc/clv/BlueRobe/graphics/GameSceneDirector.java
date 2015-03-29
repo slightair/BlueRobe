@@ -62,8 +62,8 @@ public class GameSceneDirector {
         }
 
         if (characterInstance != null) {
-            gameMaster.update(deltaTime);
-            groundLayouter.update(deltaTime);
+//            gameMaster.update(deltaTime);
+//            groundLayouter.update(deltaTime);
 
             characterInstance.updateAnimation(deltaTime);
 
