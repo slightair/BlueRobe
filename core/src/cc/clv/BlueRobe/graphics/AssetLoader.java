@@ -4,7 +4,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 
-import cc.clv.BlueRobe.graphics.animations.JumpAnimation;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
@@ -44,7 +43,6 @@ public class AssetLoader {
         Model model = getCharacterModel();
 
         Node node = model.getNode("hikari_root");
-        model.animations.add(new JumpAnimation(node, 10.0f));
         model.animations.add(new ShrinkAnimation(node));
         model.animations.add(new ReturnShrinkAnimation(node));
     }
