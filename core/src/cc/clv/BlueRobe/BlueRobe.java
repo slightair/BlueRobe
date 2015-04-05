@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
 
 import cc.clv.BlueRobe.graphics.GameSceneDirector;
 
@@ -65,6 +66,8 @@ public class BlueRobe extends ApplicationAdapter {
 
     @Override
     public void create() {
+        Bullet.init();
+
         setUpEnvironment();
         setUpCamera();
 

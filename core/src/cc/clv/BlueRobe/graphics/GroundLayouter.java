@@ -22,14 +22,17 @@ import rx.functions.Func1;
 public class GroundLayouter {
 
     private final Ground ground;
+    private final PhysicsMaster physicsMaster;
     private final LineLayouter lineLayouter = new LineLayouter();
     private final int capacity = GroundLine.NUM_BLOCKS * Ground.NUM_LINES;
 
     private final LinkedList<GroundDivision> divisions = new LinkedList<GroundDivision>();
 
-    public GroundLayouter(Ground ground) {
-        ground.getNewLines().subscribe(lineLayouter);
+    public GroundLayouter(Ground ground, PhysicsMaster physicsMaster) {
         this.ground = ground;
+        this.physicsMaster = physicsMaster;
+
+        ground.getNewLines().subscribe(lineLayouter);
     }
 
     public void layoutGround() {

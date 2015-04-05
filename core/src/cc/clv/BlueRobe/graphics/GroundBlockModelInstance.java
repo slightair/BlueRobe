@@ -18,8 +18,32 @@ public class GroundBlockModelInstance extends ModelInstance implements Animatabl
 
     private final AnimationController animationController;
 
-    private final static HashMap<GroundBlock.Type, Model> modelHashMap
-            = new HashMap<GroundBlock.Type, Model>();
+    private final static HashMap<GroundBlock.Type, Constructor> constructorHashMap
+            = new HashMap<GroundBlock.Type, Constructor>();
+
+    public static class Constructor {
+
+        private final Model model;
+
+        public Constructor(GroundBlock.Type type) {
+            model = new GroundBlockModel(type);
+        }
+
+        public GroundBlockModelInstance construct(GroundBlock groundBlock) {
+            return new GroundBlockModelInstance(model, groundBlock);
+        }
+    }
+
+    public static GroundBlockModelInstance create(GroundBlock groundBlock) {
+        GroundBlock.Type type = groundBlock.getType();
+        Constructor constructor = constructorHashMap.get(type);
+        if (constructor == null) {
+            Constructor instanceConstructor = new Constructor(type);
+            constructorHashMap.put(type, instanceConstructor);
+            constructor = instanceConstructor;
+        }
+        return constructor.construct(groundBlock);
+    }
 
     public GroundBlockModelInstance(Model model, GroundBlock groundBlock) {
         super(model);
@@ -27,18 +51,6 @@ public class GroundBlockModelInstance extends ModelInstance implements Animatabl
         this.groundBlock = groundBlock;
 
         animationController = new AnimationController(this);
-    }
-
-    public static GroundBlockModelInstance create(GroundBlock groundBlock) {
-        GroundBlock.Type type = groundBlock.getType();
-        Model blockModel = modelHashMap.get(type);
-        if (blockModel == null) {
-            GroundBlockModel model = new GroundBlockModel(type);
-            modelHashMap.put(type, model);
-            blockModel = model;
-        }
-
-        return new GroundBlockModelInstance(blockModel, groundBlock);
     }
 
     @Override
