@@ -13,12 +13,12 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
-import cc.clv.BlueRobe.engine.GroundLine;
-
 /**
  * Created by slightair on 15/03/29.
  */
 public class PhantomGround {
+
+    private static final float DEPTH = 16.0f;
 
     @lombok.Getter
     private btRigidBody body;
@@ -42,21 +42,16 @@ public class PhantomGround {
         mb.part("physicsGround", GL20.GL_TRIANGLES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
                 new Material(ColorAttribute.createDiffuse(Color.RED)))
-                .box(GroundBlockModel.SIZE * GroundLine.NUM_BLOCKS,
-                        GroundBlockModel.HEIGHT,
-                        GroundBlockModel.SIZE);
+                .box(GroundLineModel.WIDTH, GroundLineModel.HEIGHT, DEPTH);
         Model model = mb.end();
         modelInstance = new ModelInstance(model);
-        modelInstance.transform.translate(0f, -GroundBlockModel.HEIGHT / 2, 80f);
+        modelInstance.transform.translate(0f, -GroundLineModel.HEIGHT / 2, 80f);
     }
 
     private void createPhysicsBody() {
         float mass = 0.0f;
-        shape = new btBoxShape(new Vector3(
-                GroundBlockModel.SIZE * GroundLine.NUM_BLOCKS / 2,
-                GroundBlockModel.HEIGHT / 2,
-                GroundBlockModel.SIZE / 2
-        ));
+        shape = new btBoxShape(
+                new Vector3(GroundLineModel.WIDTH / 2, GroundLineModel.HEIGHT / 2, DEPTH / 2));
         if (mass > 0f) {
             shape.calculateLocalInertia(mass, localInertia);
         } else {

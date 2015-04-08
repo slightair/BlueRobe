@@ -10,7 +10,7 @@ import rx.subjects.PublishSubject;
  */
 public class Ground {
 
-    public static final int NUM_LINES = 24;
+    public static final int NUM_LINES = 3;
 
     private final PublishSubject<GroundLine> subject = PublishSubject.create();
 

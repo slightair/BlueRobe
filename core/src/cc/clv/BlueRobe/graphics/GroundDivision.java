@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.clv.BlueRobe.engine.GroundLine;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -12,22 +13,30 @@ import rx.functions.Func1;
  * Created by slightair on 15/03/26.
  */
 
-@lombok.Value
 public class GroundDivision {
 
-    GroundBlockModelInstance blockModelInstance;
-    ItemModelInstance itemModelInstance;
+    @lombok.Getter
+    GroundLineModelInstance lineModelInstance;
+
+    @lombok.Getter
+    ArrayList<ItemModelInstance> itemModelInstances;
+
+    public GroundDivision(GroundLine groundLine) {
+        lineModelInstance = GroundLineModelInstance.create(groundLine);
+        itemModelInstances = new ArrayList<ItemModelInstance>();
+
+        createItemModelInstances(groundLine);
+    }
+
+    private void createItemModelInstances(GroundLine groundLine) {
+
+    }
 
     public ArrayList<ModelInstance> getModelInstances() {
         ArrayList<ModelInstance> instances = new ArrayList<ModelInstance>();
 
-        if (blockModelInstance != null) {
-            instances.add(blockModelInstance);
-        }
-
-        if (itemModelInstance != null) {
-            instances.add(itemModelInstance);
-        }
+        instances.add(lineModelInstance);
+        instances.addAll(itemModelInstances);
 
         return instances;
     }
