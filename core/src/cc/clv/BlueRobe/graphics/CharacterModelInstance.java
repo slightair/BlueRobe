@@ -17,6 +17,8 @@ import rx.functions.Action1;
  */
 public class CharacterModelInstance extends ModelInstance implements AnimatableModelInstance {
 
+    private static final float DISTANCE = 16.0f;
+
     @lombok.Getter
     private final Character character;
 
@@ -71,10 +73,10 @@ public class CharacterModelInstance extends ModelInstance implements AnimatableM
                 switch (action) {
 
                     case MOVE_LEFT:
-                        transform.translate(GroundBlockModel.SIZE, 0.0f, 0.0f);
+                        transform.translate(DISTANCE, 0.0f, 0.0f);
                         break;
                     case MOVE_RIGHT:
-                        transform.translate(-GroundBlockModel.SIZE, 0.0f, 0.0f);
+                        transform.translate(-DISTANCE, 0.0f, 0.0f);
                         break;
                     case PREPARE_JUMP:
                         animationController.animate("shrink", 0.0f);

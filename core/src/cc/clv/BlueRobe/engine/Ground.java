@@ -10,26 +10,26 @@ import rx.subjects.PublishSubject;
  */
 public class Ground {
 
-    public static final int NUM_LINES = 24;
+    public static final int NUM_BLOCKS = 3;
 
-    private final PublishSubject<GroundLine> subject = PublishSubject.create();
+    private final PublishSubject<GroundBlock> subject = PublishSubject.create();
 
     @lombok.Getter
-    private final LinkedList<GroundLine> lines;
+    private final LinkedList<GroundBlock> blocks;
 
-    public Ground(LinkedList<GroundLine> lines) {
-        this.lines = lines;
+    public Ground(LinkedList<GroundBlock> blocks) {
+        this.blocks = blocks;
     }
 
-    public Observable<GroundLine> getNewLines() {
+    public Observable<GroundBlock> getNewBlocks() {
         return subject;
     }
 
-    public void putLine(GroundLine line) {
-        lines.addLast(line);
-        if (lines.size() > NUM_LINES) {
-            lines.removeFirst();
+    public void putBlock(GroundBlock block) {
+        blocks.addLast(block);
+        if (blocks.size() > NUM_BLOCKS) {
+            blocks.removeFirst();
         }
-        subject.onNext(line);
+        subject.onNext(block);
     }
 }

@@ -12,29 +12,23 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 
 import cc.clv.BlueRobe.engine.GroundBlock;
 
-/**
- * Created by slightair on 15/02/22.
- */
 public class GroundBlockModel extends Model {
 
-    public static final float SIZE = 16f;
+    public static final float WIDTH = 176f;
     public static final float HEIGHT = 32f;
+    public static final float DEPTH = 160f;
 
-    private final GroundBlock.Type blockType;
+    private final GroundBlock.Type type;
 
-    public GroundBlockModel(GroundBlock.Type blockType) {
-        this.blockType = blockType;
+    public GroundBlockModel(GroundBlock.Type type) {
+        this.type = type;
 
-        createBlockModel();
+        construct();
     }
 
-    private void createBlockModel() {
-        createDebugBlockModel();
-    }
-
-    private void createDebugBlockModel() {
+    private void construct() {
         Color color;
-        switch (blockType) {
+        switch (type) {
             case DebugWhite:
                 color = Color.WHITE;
                 break;
@@ -54,7 +48,7 @@ public class GroundBlockModel extends Model {
         node.id = "block";
         node.parts.add(new NodePart(meshBuilder.part("base", GL20.GL_TRIANGLES), material));
 
-        meshBuilder.box(SIZE, HEIGHT, SIZE);
+        meshBuilder.box(WIDTH, HEIGHT, DEPTH);
 
         meshBuilder.end();
 
