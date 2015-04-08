@@ -6,7 +6,7 @@ package cc.clv.BlueRobe.engine;
 
 
 @lombok.Value
-public class GroundLine {
+public class GroundBlock {
 
     public enum Type {
         DebugWhite,

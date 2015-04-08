@@ -9,7 +9,7 @@ import java.util.List;
 
 import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.engine.Ground;
-import cc.clv.BlueRobe.engine.GroundLine;
+import cc.clv.BlueRobe.engine.GroundBlock;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -27,7 +27,7 @@ public class GroundLayouter {
         this.ground = ground;
         this.physicsMaster = physicsMaster;
 
-        ground.getNewLines()
+        ground.getNewBlocks()
                 .map(new GroundDivisionCreator())
                 .subscribe(new GroundDivisionLayouter());
     }
@@ -35,18 +35,18 @@ public class GroundLayouter {
     public void layoutGround() {
         divisions.clear();
 
-        Observable.from(ground.getLines())
+        Observable.from(ground.getBlocks())
                 .map(new GroundDivisionCreator())
                 .subscribe(new GroundDivisionLayouter());
     }
 
     public void update(final float deltaTime) {
-        float distance = (deltaTime / GameMaster.GROUND_LINE_SPAWN_INTERVAL)
-                * GroundLineModel.DEPTH;
+        float distance = (deltaTime / GameMaster.GROUND_BLOCK_SPAWN_INTERVAL)
+                * GroundBlockModel.DEPTH;
         Observable.from(divisions).subscribe(new GroundDivisionForwarder(distance));
 
-        float expectFirstDivisionPosZ = GroundLineModel.DEPTH / 2 + GroundLineModel.DEPTH;
-        float firstDivisionPosZ = divisions.getFirst().getLineModelInstance()
+        float expectFirstDivisionPosZ = GroundBlockModel.DEPTH / 2 + GroundBlockModel.DEPTH;
+        float firstDivisionPosZ = divisions.getFirst().getBlockModelInstance()
                 .transform.getTranslation(new Vector3()).z;
         float gap = firstDivisionPosZ - expectFirstDivisionPosZ;
 
@@ -91,11 +91,11 @@ public class GroundLayouter {
                 }).toList().toBlocking().single();
     }
 
-    private class GroundDivisionCreator implements Func1<GroundLine, GroundDivision> {
+    private class GroundDivisionCreator implements Func1<GroundBlock, GroundDivision> {
 
         @Override
-        public GroundDivision call(GroundLine groundLine) {
-            return new GroundDivision(groundLine);
+        public GroundDivision call(GroundBlock groundBlock) {
+            return new GroundDivision(groundBlock);
         }
     }
 
@@ -106,31 +106,31 @@ public class GroundLayouter {
             layout(division);
 
             divisions.addLast(division);
-            if (divisions.size() > Ground.NUM_LINES) {
+            if (divisions.size() > Ground.NUM_BLOCKS) {
                 divisions.removeFirst();
             }
         }
 
         private void layout(GroundDivision division) {
-            GroundLineModelInstance lineModelInstance = division.getLineModelInstance();
-            if (lineModelInstance == null) {
+            GroundBlockModelInstance blockModelInstance = division.getBlockModelInstance();
+            if (blockModelInstance == null) {
                 return;
             }
 
-            GroundLine groundLine = lineModelInstance.getGroundLine();
-            int index = groundLine.getIndex();
+            GroundBlock groundBlock = blockModelInstance.getGroundBlock();
+            int index = groundBlock.getIndex();
 
             float z;
             if (index == 0) {
-                z = GroundLineModel.DEPTH / 2;
+                z = GroundBlockModel.DEPTH / 2;
             } else {
-                GroundLineModelInstance prevLine = divisions.getLast().getLineModelInstance();
-                z = prevLine.transform.getTranslation(new Vector3()).z - GroundLineModel.DEPTH;
+                GroundBlockModelInstance prevBlock = divisions.getLast().getBlockModelInstance();
+                z = prevBlock.transform.getTranslation(new Vector3()).z - GroundBlockModel.DEPTH;
             }
-            float y = -GroundLineModel.HEIGHT / 2;
+            float y = -GroundBlockModel.HEIGHT / 2;
             float x = 0;
 
-            lineModelInstance.transform.translate(x, y, z);
+            blockModelInstance.transform.translate(x, y, z);
 
             for (ItemModelInstance itemModelInstance : division.getItemModelInstances()) {
                 Vector3 position = itemModelInstance.transform.getTranslation(new Vector3())

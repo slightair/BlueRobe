@@ -10,31 +10,31 @@ public class GroundGenerator {
     @lombok.Getter
     private final Ground ground;
 
-    private int currentLineIndex = 0;
+    private int currentBlockIndex = 0;
 
     public GroundGenerator() {
         this.ground = initialGround();
     }
 
     private Ground initialGround() {
-        LinkedList<GroundLine> lines = new LinkedList();
-        for (int i = 0; i < Ground.NUM_LINES; i++) {
-            lines.add(createNewLine());
+        LinkedList<GroundBlock> blocks = new LinkedList();
+        for (int i = 0; i < Ground.NUM_BLOCKS; i++) {
+            blocks.add(createNewBlock());
         }
 
-        return new Ground(lines);
+        return new Ground(blocks);
     }
 
-    private GroundLine createNewLine() {
-        GroundLine.Type type = currentLineIndex % 2 == 0 ?
-                GroundLine.Type.DebugWhite : GroundLine.Type.DebugGray;
-        GroundLine line = new GroundLine(type, currentLineIndex);
-        currentLineIndex++;
+    private GroundBlock createNewBlock() {
+        GroundBlock.Type type = currentBlockIndex % 2 == 0 ?
+                GroundBlock.Type.DebugWhite : GroundBlock.Type.DebugGray;
+        GroundBlock block = new GroundBlock(type, currentBlockIndex);
+        currentBlockIndex++;
 
-        return line;
+        return block;
     }
 
     public void next() {
-        ground.putLine(createNewLine());
+        ground.putBlock(createNewBlock());
     }
 }

@@ -42,16 +42,16 @@ public class PhantomGround {
         mb.part("physicsGround", GL20.GL_TRIANGLES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
                 new Material(ColorAttribute.createDiffuse(Color.RED)))
-                .box(GroundLineModel.WIDTH, GroundLineModel.HEIGHT, DEPTH);
+                .box(GroundBlockModel.WIDTH, GroundBlockModel.HEIGHT, DEPTH);
         Model model = mb.end();
         modelInstance = new ModelInstance(model);
-        modelInstance.transform.translate(0f, -GroundLineModel.HEIGHT / 2, 80f);
+        modelInstance.transform.translate(0f, -GroundBlockModel.HEIGHT / 2, 80f);
     }
 
     private void createPhysicsBody() {
         float mass = 0.0f;
         shape = new btBoxShape(
-                new Vector3(GroundLineModel.WIDTH / 2, GroundLineModel.HEIGHT / 2, DEPTH / 2));
+                new Vector3(GroundBlockModel.WIDTH / 2, GroundBlockModel.HEIGHT / 2, DEPTH / 2));
         if (mass > 0f) {
             shape.calculateLocalInertia(mass, localInertia);
         } else {

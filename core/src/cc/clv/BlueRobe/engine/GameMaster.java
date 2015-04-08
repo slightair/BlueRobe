@@ -16,10 +16,10 @@ public class GameMaster {
         CHARACTER_PREPARE_JUMP,
         CHARACTER_JUMP,
         CHARACTER_CANCEL_JUMP,
-        GROUND_SPAWN_NEW_LINE,
+        GROUND_SPAWN_NEW_BLOCK,
     }
 
-    public static final float GROUND_LINE_SPAWN_INTERVAL = 1f;
+    public static final float GROUND_BLOCK_SPAWN_INTERVAL = 1f;
 
     private final Observable<Action> input;
 
@@ -35,20 +35,20 @@ public class GameMaster {
             return aFloat + aFloat2;
         }
     });
-    private final GroundLineEmitter groundLineEmitter =
-            new GroundLineEmitter(timeline, GROUND_LINE_SPAWN_INTERVAL);
+    private final GroundBlockEmitter groundBlockEmitter =
+            new GroundBlockEmitter(timeline, GROUND_BLOCK_SPAWN_INTERVAL);
 
     private class ActionProcessor implements Action1<Action> {
 
         @Override
         public void call(Action action) {
-            if (action == Action.GROUND_SPAWN_NEW_LINE) {
+            if (action == Action.GROUND_SPAWN_NEW_BLOCK) {
                 groundGenerator.next();
             }
         }
     }
 
-    private class GroundLineEmitter {
+    private class GroundBlockEmitter {
 
         private float recentTime = 0.0f;
         private final float threshold;
@@ -57,7 +57,7 @@ public class GameMaster {
         @lombok.Getter
         private final PublishSubject<Action> emits = PublishSubject.create();
 
-        public GroundLineEmitter(Observable<Float> timeline, final float threshold) {
+        public GroundBlockEmitter(Observable<Float> timeline, final float threshold) {
             this.timeline = timeline;
             this.threshold = threshold;
             timeline.subscribe(new Action1<Float>() {
@@ -68,7 +68,7 @@ public class GameMaster {
                     if (interval > threshold) {
                         int times = (int) Math.floor(interval / threshold);
                         for (int i = 0; i < times; i++) {
-                            emits.onNext(Action.GROUND_SPAWN_NEW_LINE);
+                            emits.onNext(Action.GROUND_SPAWN_NEW_BLOCK);
                         }
                         recentTime = time;
                     }
@@ -83,7 +83,7 @@ public class GameMaster {
 
         actionSubject
                 .mergeWith(input)
-                .mergeWith(groundLineEmitter.getEmits())
+                .mergeWith(groundBlockEmitter.getEmits())
                 .subscribe(new ActionProcessor());
     }
 

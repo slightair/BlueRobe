@@ -6,49 +6,49 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 
 import java.util.HashMap;
 
-import cc.clv.BlueRobe.engine.GroundLine;
+import cc.clv.BlueRobe.engine.GroundBlock;
 
 /**
  * Created by slightair on 15/03/14.
  */
-public class GroundLineModelInstance extends ModelInstance implements AnimatableModelInstance {
+public class GroundBlockModelInstance extends ModelInstance implements AnimatableModelInstance {
 
     @lombok.Getter
-    private final GroundLine groundLine;
+    private final GroundBlock groundBlock;
 
     private final AnimationController animationController;
 
-    private final static HashMap<GroundLine.Type, Constructor> constructorHashMap
-            = new HashMap<GroundLine.Type, Constructor>();
+    private final static HashMap<GroundBlock.Type, Constructor> constructorHashMap
+            = new HashMap<GroundBlock.Type, Constructor>();
 
     public static class Constructor {
 
         private final Model model;
 
-        public Constructor(GroundLine.Type type) {
-            model = new GroundLineModel(type);
+        public Constructor(GroundBlock.Type type) {
+            model = new GroundBlockModel(type);
         }
 
-        public GroundLineModelInstance construct(GroundLine groundLine) {
-            return new GroundLineModelInstance(model, groundLine);
+        public GroundBlockModelInstance construct(GroundBlock groundBlock) {
+            return new GroundBlockModelInstance(model, groundBlock);
         }
     }
 
-    public static GroundLineModelInstance create(GroundLine groundLine) {
-        GroundLine.Type type = groundLine.getType();
+    public static GroundBlockModelInstance create(GroundBlock groundBlock) {
+        GroundBlock.Type type = groundBlock.getType();
         Constructor constructor = constructorHashMap.get(type);
         if (constructor == null) {
             Constructor instanceConstructor = new Constructor(type);
             constructorHashMap.put(type, instanceConstructor);
             constructor = instanceConstructor;
         }
-        return constructor.construct(groundLine);
+        return constructor.construct(groundBlock);
     }
 
-    public GroundLineModelInstance(Model model, GroundLine groundLine) {
+    public GroundBlockModelInstance(Model model, GroundBlock groundBlock) {
         super(model);
 
-        this.groundLine = groundLine;
+        this.groundBlock = groundBlock;
 
         animationController = new AnimationController(this);
     }

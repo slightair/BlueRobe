@@ -10,17 +10,17 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 
-import cc.clv.BlueRobe.engine.GroundLine;
+import cc.clv.BlueRobe.engine.GroundBlock;
 
-public class GroundLineModel extends Model {
+public class GroundBlockModel extends Model {
 
     public static final float WIDTH = 176f;
     public static final float HEIGHT = 32f;
     public static final float DEPTH = 160f;
 
-    private final GroundLine.Type type;
+    private final GroundBlock.Type type;
 
-    public GroundLineModel(GroundLine.Type type) {
+    public GroundBlockModel(GroundBlock.Type type) {
         this.type = type;
 
         construct();
@@ -45,7 +45,7 @@ public class GroundLineModel extends Model {
         meshBuilder.begin(VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         Node node = new Node();
-        node.id = "line";
+        node.id = "block";
         node.parts.add(new NodePart(meshBuilder.part("base", GL20.GL_TRIANGLES), material));
 
         meshBuilder.box(WIDTH, HEIGHT, DEPTH);
