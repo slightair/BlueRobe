@@ -5,9 +5,6 @@ import rx.functions.Action1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-/**
- * Created by slightair on 15/02/27.
- */
 public class GameMaster {
 
     public enum Action {

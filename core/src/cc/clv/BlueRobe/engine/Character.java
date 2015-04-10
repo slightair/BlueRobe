@@ -3,9 +3,6 @@ package cc.clv.BlueRobe.engine;
 import rx.Observable;
 import rx.functions.Func1;
 
-/**
- * Created by slightair on 15/02/27.
- */
 public class Character {
 
     public enum Action {

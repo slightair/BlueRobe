@@ -11,9 +11,6 @@ import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.input.GameSceneInput;
 import rx.Observer;
 
-/**
- * Created by slightair on 15/03/22.
- */
 public class GameSceneDirector {
 
     private final OrthographicCamera camera;

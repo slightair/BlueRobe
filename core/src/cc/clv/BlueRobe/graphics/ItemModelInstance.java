@@ -6,9 +6,6 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 
 import cc.clv.BlueRobe.engine.Item;
 
-/**
- * Created by slightair on 15/03/25.
- */
 public class ItemModelInstance extends ModelInstance implements AnimatableModelInstance {
 
     private final Item item;

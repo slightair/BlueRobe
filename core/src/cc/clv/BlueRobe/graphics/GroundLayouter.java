@@ -14,9 +14,6 @@ import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-/**
- * Created by slightair on 15/02/22.
- */
 public class GroundLayouter {
 
     private final Ground ground;

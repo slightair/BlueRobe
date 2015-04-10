@@ -12,9 +12,6 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import cc.clv.BlueRobe.engine.Character;
 import rx.functions.Action1;
 
-/**
- * Created by slightair on 15/02/27.
- */
 public class CharacterModelInstance extends ModelInstance implements AnimatableModelInstance {
 
     private static final float DISTANCE = 16.0f;

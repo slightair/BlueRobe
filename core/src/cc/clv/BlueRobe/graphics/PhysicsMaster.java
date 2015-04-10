@@ -13,9 +13,6 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
-/**
- * Created by slightair on 15/03/28.
- */
 public class PhysicsMaster {
 
     private final btCollisionConfiguration collisionConfiguration;

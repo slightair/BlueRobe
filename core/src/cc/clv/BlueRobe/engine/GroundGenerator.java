@@ -2,9 +2,6 @@ package cc.clv.BlueRobe.engine;
 
 import java.util.LinkedList;
 
-/**
- * Created by slightair on 15/02/22.
- */
 public class GroundGenerator {
 
     @lombok.Getter

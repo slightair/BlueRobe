@@ -11,9 +11,6 @@ import aurelienribon.tweenengine.TweenManager;
 import cc.clv.BlueRobe.engine.Character;
 import rx.functions.Action1;
 
-/**
- * Created by slightair on 15/03/10.
- */
 public class CameraMan {
 
     private static final float cameraMoveDuration = 0.3f;

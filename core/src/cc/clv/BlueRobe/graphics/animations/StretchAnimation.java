@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.g3d.model.NodeKeyframe;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-/**
- * Created by slightair on 15/02/21.
- */
 public class StretchAnimation extends Animation {
 
     public static final float defaultDuration = 1.2f;

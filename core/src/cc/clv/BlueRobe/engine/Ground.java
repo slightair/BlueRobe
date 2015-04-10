@@ -5,9 +5,6 @@ import java.util.LinkedList;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-/**
- * Created by slightair on 15/03/11.
- */
 public class Ground {
 
     public static final int NUM_BLOCKS = 3;

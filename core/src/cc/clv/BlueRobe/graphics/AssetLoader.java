@@ -10,10 +10,6 @@ import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-/**
- * Created by slightair on 15/03/23.
- */
-
 public class AssetLoader {
 
     private static final AssetLoader instance = new AssetLoader();

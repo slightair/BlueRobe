@@ -13,9 +13,6 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
-/**
- * Created by slightair on 15/03/29.
- */
 public class PhantomGround {
 
     private static final float DEPTH = 16.0f;

@@ -8,9 +8,6 @@ import java.util.HashMap;
 
 import cc.clv.BlueRobe.engine.GroundBlock;
 
-/**
- * Created by slightair on 15/03/14.
- */
 public class GroundBlockModelInstance extends ModelInstance implements AnimatableModelInstance {
 
     @lombok.Getter

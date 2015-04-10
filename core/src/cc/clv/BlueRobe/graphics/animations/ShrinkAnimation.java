@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.g3d.model.NodeKeyframe;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-/**
- * Created by slightair on 2015/02/08.
- */
 public class ShrinkAnimation extends Animation {
 
     public static final float defaultDuration = 0.1f;
