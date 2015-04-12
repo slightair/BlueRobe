@@ -7,7 +7,7 @@ import rx.subjects.PublishSubject;
 
 public class Ground {
 
-    public static final int NUM_BLOCKS = 3;
+    public static final int NUM_BLOCKS = 4;
 
     private final PublishSubject<GroundBlock> subject = PublishSubject.create();
 
