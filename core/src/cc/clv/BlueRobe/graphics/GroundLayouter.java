@@ -16,21 +16,19 @@ import rx.functions.Func1;
 
 public class GroundLayouter {
 
-    private final Ground ground;
     private final PhysicsMaster physicsMaster;
     private final LinkedList<GroundDivision> divisions = new LinkedList<GroundDivision>();
 
-    public GroundLayouter(Ground ground, PhysicsMaster physicsMaster) {
-        this.ground = ground;
+    public GroundLayouter(PhysicsMaster physicsMaster) {
         this.physicsMaster = physicsMaster;
+    }
+
+    public void layoutGround(Ground ground) {
+        divisions.clear();
 
         ground.getNewBlocks()
                 .map(new GroundDivisionCreator())
                 .subscribe(new GroundDivisionLayouter());
-    }
-
-    public void layoutGround() {
-        divisions.clear();
 
         Observable.from(ground.getBlocks())
                 .map(new GroundDivisionCreator())

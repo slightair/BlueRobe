@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 
 import java.util.ArrayList;
 
+import cc.clv.BlueRobe.assets.AssetMaster;
 import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.input.GameSceneInput;
 import rx.Observer;
@@ -31,7 +32,7 @@ public class GameSceneDirector {
         gameMaster = new GameMaster(input.getActions());
         physicsMaster = new PhysicsMaster();
         phantomGround = new PhantomGround();
-        groundLayouter = new GroundLayouter(gameMaster.getGround(), physicsMaster);
+        groundLayouter = new GroundLayouter(physicsMaster);
 
         physicsMaster.addPhantomGround(phantomGround);
 
@@ -39,8 +40,7 @@ public class GameSceneDirector {
         debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
         physicsMaster.getDynamicsWorld().setDebugDrawer(debugDrawer);
 
-        AssetLoader assetLoader = AssetLoader.getInstance();
-        assetLoader.load().subscribe(new Observer<Float>() {
+        AssetMaster.load().subscribe(new Observer<Float>() {
             @Override
             public void onCompleted() {
                 doneLoading();
@@ -56,8 +56,6 @@ public class GameSceneDirector {
 
             }
         });
-
-        groundLayouter.layoutGround();
     }
 
     private void doneLoading() {
@@ -65,24 +63,28 @@ public class GameSceneDirector {
         cameraMan = new CameraMan(camera, characterInstance);
 
         physicsMaster.addCharacter(characterInstance);
+
+        gameMaster.start();
+        groundLayouter.layoutGround(gameMaster.getGround());
     }
 
     public void update(float deltaTime) {
-        AssetLoader assetLoader = AssetLoader.getInstance();
-        if (!assetLoader.isCompleted()) {
-            assetLoader.update();
+        if (!AssetMaster.isLoadCompleted()) {
+            AssetMaster.update();
+        }
+
+        if (!gameMaster.isRunning()) {
+            return;
         }
 
         physicsMaster.stepSimulation(deltaTime);
 
-        if (characterInstance != null) {
-            gameMaster.update(deltaTime);
-            groundLayouter.update(deltaTime);
+        gameMaster.update(deltaTime);
+        groundLayouter.update(deltaTime);
 
-            characterInstance.updateAnimation(deltaTime);
+        characterInstance.updateAnimation(deltaTime);
 
-            cameraMan.update(deltaTime);
-        }
+        cameraMan.update(deltaTime);
 
 //        debugDrawer.begin(camera);
 //        physicsMaster.getDynamicsWorld().debugDrawWorld();

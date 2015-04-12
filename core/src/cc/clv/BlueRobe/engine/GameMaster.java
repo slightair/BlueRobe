@@ -23,7 +23,10 @@ public class GameMaster {
     @lombok.Getter
     private final Character character;
 
-    private final GroundGenerator groundGenerator = new GroundGenerator();
+    @lombok.Getter
+    private boolean isRunning;
+
+    private final GroundGenerator groundGenerator = new GroundGenerator("debug");
     private final PublishSubject<Action> actionSubject = PublishSubject.create();
     private final PublishSubject<Float> updateSubject = PublishSubject.create();
     private final Observable<Float> timeline = updateSubject.scan(new Func2<Float, Float, Float>() {
@@ -77,11 +80,17 @@ public class GameMaster {
     public GameMaster(Observable<Action> input) {
         this.input = input;
         this.character = new Character(input);
+    }
+
+    public void start() {
+        this.groundGenerator.start();
 
         actionSubject
                 .mergeWith(input)
                 .mergeWith(groundBlockEmitter.getEmits())
                 .subscribe(new ActionProcessor());
+
+        isRunning = true;
     }
 
     public Ground getGround() {

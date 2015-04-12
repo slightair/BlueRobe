@@ -1,16 +1,24 @@
 package cc.clv.BlueRobe.engine;
 
+import com.badlogic.gdx.maps.tiled.TiledMap;
+
 import java.util.LinkedList;
+
+import cc.clv.BlueRobe.assets.AssetMaster;
 
 public class GroundGenerator {
 
+    private final String stageName;
+
+    private TiledMap stageMap;
+
     @lombok.Getter
-    private final Ground ground;
+    private Ground ground;
 
     private int currentBlockIndex = 0;
 
-    public GroundGenerator() {
-        this.ground = initialGround();
+    public GroundGenerator(String stageName) {
+        this.stageName = stageName;
     }
 
     private Ground initialGround() {
@@ -20,6 +28,11 @@ public class GroundGenerator {
         }
 
         return new Ground(blocks);
+    }
+
+    public void start() {
+        this.stageMap = AssetMaster.getStageLoader().get("debug");
+        this.ground = initialGround();
     }
 
     private GroundBlock createNewBlock() {

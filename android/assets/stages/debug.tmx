@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="11" height="100" tilewidth="16" tileheight="16" nextobjectid="1">
+ <layer name="タイル・レイヤー1" width="11" height="100">
+  <properties>
+   <property name="groundColor" value="0x88FF60"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T+1rCKAAAAAAeAMRMAAB
+  </data>
+ </layer>
+</map>
