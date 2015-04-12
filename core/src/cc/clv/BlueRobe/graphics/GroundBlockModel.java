@@ -23,22 +23,22 @@ public class GroundBlockModel extends Model {
     public GroundBlockModel(GroundBlock.Type type) {
         this.type = type;
 
-        construct();
-    }
-
-    private void construct() {
-        Color color;
         switch (type) {
             case DebugWhite:
-                color = Color.WHITE;
+                createDebugBlock(Color.WHITE);
                 break;
             case DebugGray:
-                color = Color.LIGHT_GRAY;
+                createDebugBlock(Color.LIGHT_GRAY);
+                break;
+            case Grass:
+                createDebugBlock(new Color(0x88ff60ff));
                 break;
             default:
-                color = Color.DARK_GRAY;
+                createDebugBlock(Color.DARK_GRAY);
         }
+    }
 
+    private void createDebugBlock(Color color) {
         Material material = new Material(ColorAttribute.createDiffuse(color));
 
         MeshBuilder meshBuilder = new MeshBuilder();

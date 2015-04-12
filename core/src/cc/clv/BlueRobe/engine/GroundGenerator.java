@@ -36,15 +36,23 @@ public class GroundGenerator {
     }
 
     private GroundBlock createNewBlock() {
-        GroundBlock.Type type = currentBlockIndex % 2 == 0 ?
-                GroundBlock.Type.DebugWhite : GroundBlock.Type.DebugGray;
-        GroundBlock block = new GroundBlock(type, currentBlockIndex);
+        GroundBlock.Type type = GroundBlock.Type
+                .valueOf(stageMap.getProperties().get("baseGroundType").toString());
+
+        GroundBlock block = GroundBlock.builder()
+                .index(currentBlockIndex)
+                .type(type)
+                .build();
         currentBlockIndex++;
 
         return block;
     }
 
     public void next() {
-        ground.putBlock(createNewBlock());
+        GroundBlock nextBlock = createNewBlock();
+
+        if (nextBlock != null) {
+            ground.putBlock(nextBlock);
+        }
     }
 }

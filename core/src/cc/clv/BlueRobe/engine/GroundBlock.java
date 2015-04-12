@@ -1,13 +1,17 @@
 package cc.clv.BlueRobe.engine;
 
-@lombok.Value
+@lombok.Builder
 public class GroundBlock {
 
     public enum Type {
         DebugWhite,
         DebugGray,
+        Grass,
     }
 
-    Type type;
-    int index;
+    @lombok.Getter
+    private Type type;
+
+    @lombok.Getter
+    private int index;
 }
