@@ -30,7 +30,7 @@ public class BlueRobe extends ApplicationAdapter {
         DirectionalLight directionalLight = new DirectionalLight()
                 .set(0.8f, 0.8f, 0.8f, 24f, -24f, 0f);
         environment.add(directionalLight);
-        shadowLight = new DirectionalShadowLight(1024, 1024, 320f, 100f, 1f, 300f);
+        shadowLight = new DirectionalShadowLight(1024, 1024, 320f, 200f, 1f, 300f);
         shadowLight.set(directionalLight);
         environment.shadowMap = shadowLight;
 
