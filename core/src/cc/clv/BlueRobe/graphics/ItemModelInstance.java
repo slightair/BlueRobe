@@ -9,7 +9,9 @@ import cc.clv.BlueRobe.engine.Item;
 
 public class ItemModelInstance extends ModelInstance implements AnimatableModelInstance {
 
+    @lombok.Getter
     private final Item item;
+
     private final AnimationController animationController;
 
     public ItemModelInstance(Item item, Model model) {

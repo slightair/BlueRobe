@@ -4,4 +4,6 @@ package cc.clv.BlueRobe.engine;
 public class Item {
 
     String name;
+    int positionX;
+    int positionY;
 }

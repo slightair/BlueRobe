@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-up" width="11" height="100" tilewidth="16" tileheight="16" nextobjectid="1">
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="11" height="100" tilewidth="16" tileheight="16" backgroundcolor="#808080" nextobjectid="4">
  <properties>
   <property name="baseGroundType" value="Grass"/>
  </properties>
- <layer name="タイル・レイヤー1" width="11" height="100">
-  <properties>
-   <property name="groundColor" value="0x88FF60"/>
-  </properties>
+ <tileset firstgid="1" name="items" tilewidth="16" tileheight="16">
+  <tile id="0">
+   <properties>
+    <property name="name" value="mushroom"/>
+   </properties>
+   <image width="16" height="16" source="twemoji/1f344.png"/>
+  </tile>
+ </tileset>
+ <layer name="items" width="11" height="100">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T+1rCKAAAAAAeAMRMAAB
+   eJzt0cEJACAMBMHYf9NiBwfmcQs7kI8EguyMWpxw1MVmTDZjshmTzZhsxmQzJpsxpc3Srj976dv23e29pn88F1uWAEQ=
   </data>
  </layer>
 </map>

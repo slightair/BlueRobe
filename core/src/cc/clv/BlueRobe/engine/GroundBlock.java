@@ -1,7 +1,12 @@
 package cc.clv.BlueRobe.engine;
 
+import java.util.ArrayList;
+
 @lombok.Builder
+@lombok.Value
 public class GroundBlock {
+
+    public static final int NUM_VERTICAL_CELLS = 10;
 
     public enum Type {
         DebugWhite,
@@ -9,9 +14,7 @@ public class GroundBlock {
         Grass,
     }
 
-    @lombok.Getter
-    private Type type;
-
-    @lombok.Getter
-    private int index;
+    Type type;
+    int index;
+    ArrayList<Item> items;
 }

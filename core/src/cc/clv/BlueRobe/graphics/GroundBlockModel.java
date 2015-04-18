@@ -14,9 +14,10 @@ import cc.clv.BlueRobe.engine.GroundBlock;
 
 public class GroundBlockModel extends Model {
 
-    public static final float WIDTH = 176f;
-    public static final float HEIGHT = 32f;
-    public static final float DEPTH = 160f;
+    public static final float UNIT = 16f;
+    public static final float WIDTH = UNIT * 11;
+    public static final float HEIGHT = UNIT * 2;
+    public static final float DEPTH = UNIT * 10;
 
     private final GroundBlock.Type type;
 
