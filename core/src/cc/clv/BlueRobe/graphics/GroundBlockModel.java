@@ -14,31 +14,32 @@ import cc.clv.BlueRobe.engine.GroundBlock;
 
 public class GroundBlockModel extends Model {
 
-    public static final float WIDTH = 176f;
-    public static final float HEIGHT = 32f;
-    public static final float DEPTH = 160f;
+    public static final float UNIT = 16f;
+    public static final float WIDTH = UNIT * 11;
+    public static final float HEIGHT = UNIT * 2;
+    public static final float DEPTH = UNIT * 10;
 
     private final GroundBlock.Type type;
 
     public GroundBlockModel(GroundBlock.Type type) {
         this.type = type;
 
-        construct();
-    }
-
-    private void construct() {
-        Color color;
         switch (type) {
             case DebugWhite:
-                color = Color.WHITE;
+                createDebugBlock(Color.WHITE);
                 break;
             case DebugGray:
-                color = Color.LIGHT_GRAY;
+                createDebugBlock(Color.LIGHT_GRAY);
+                break;
+            case Grass:
+                createDebugBlock(new Color(0x88ff60ff));
                 break;
             default:
-                color = Color.DARK_GRAY;
+                createDebugBlock(Color.DARK_GRAY);
         }
+    }
 
+    private void createDebugBlock(Color color) {
         Material material = new Material(ColorAttribute.createDiffuse(color));
 
         MeshBuilder meshBuilder = new MeshBuilder();

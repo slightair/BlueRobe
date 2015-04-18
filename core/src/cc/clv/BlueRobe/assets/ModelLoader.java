@@ -1,4 +1,4 @@
-package cc.clv.BlueRobe.graphics;
+package cc.clv.BlueRobe.assets;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -7,32 +7,25 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import cc.clv.BlueRobe.graphics.animations.ReturnShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.ShrinkAnimation;
 import cc.clv.BlueRobe.graphics.animations.StretchAnimation;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 
-public class AssetLoader {
+public class ModelLoader implements Loader {
 
-    private static final AssetLoader instance = new AssetLoader();
+    private final AssetManager assetManager;
 
-    private AssetLoader() {
+    public ModelLoader(AssetManager assetManager) {
+        this.assetManager = assetManager;
     }
 
-    public static AssetLoader getInstance() {
-        return AssetLoader.instance;
-    }
-
-    private final AssetManager assetManager = new AssetManager();
-
-    private PublishSubject<Float> progressSubject;
-    private boolean completed = false;
-
-    public Observable<Float> load() {
+    @Override
+    public void load() {
         assetManager.load("models/hikari.g3db", Model.class);
         assetManager.load("models/items.g3db", Model.class);
+    }
 
-        progressSubject = PublishSubject.create();
-
-        return progressSubject;
+    @Override
+    public void complete() {
+        setUpCharacterModel();
+        setUpItemModel();
     }
 
     private void setUpCharacterModel() {
@@ -48,22 +41,6 @@ public class AssetLoader {
 
         Node node = model.getNode("mushroom");
         model.animations.add(new StretchAnimation(node));
-    }
-
-    public void update() {
-        completed = assetManager.update();
-        progressSubject.onNext(assetManager.getProgress());
-
-        if (completed) {
-            setUpCharacterModel();
-            setUpItemModel();
-
-            progressSubject.onCompleted();
-        }
-    }
-
-    public boolean isCompleted() {
-        return completed;
     }
 
     public Model getCharacterModel() {

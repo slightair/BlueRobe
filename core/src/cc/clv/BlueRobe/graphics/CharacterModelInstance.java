@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
+import cc.clv.BlueRobe.assets.AssetMaster;
 import cc.clv.BlueRobe.engine.Character;
 import rx.functions.Action1;
 
@@ -35,7 +36,7 @@ public class CharacterModelInstance extends ModelInstance implements AnimatableM
 
         public Constructor() {
             float mass = 1.0f;
-            model = AssetLoader.getInstance().getCharacterModel();
+            model = AssetMaster.getModelLoader().getCharacterModel();
             shape = Bullet.obtainStaticNodeShape(model.nodes);
             if (mass > 0f) {
                 shape.calculateLocalInertia(mass, localInertia);

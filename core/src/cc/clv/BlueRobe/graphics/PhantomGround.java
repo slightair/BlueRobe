@@ -15,8 +15,6 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
 public class PhantomGround {
 
-    private static final float DEPTH = 16.0f;
-
     @lombok.Getter
     private btRigidBody body;
 
@@ -39,7 +37,7 @@ public class PhantomGround {
         mb.part("physicsGround", GL20.GL_TRIANGLES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
                 new Material(ColorAttribute.createDiffuse(Color.RED)))
-                .box(GroundBlockModel.WIDTH, GroundBlockModel.HEIGHT, DEPTH);
+                .box(GroundBlockModel.WIDTH, GroundBlockModel.HEIGHT, GroundBlockModel.UNIT);
         Model model = mb.end();
         modelInstance = new ModelInstance(model);
         modelInstance.transform.translate(0f, -GroundBlockModel.HEIGHT / 2, 80f);
@@ -48,7 +46,9 @@ public class PhantomGround {
     private void createPhysicsBody() {
         float mass = 0.0f;
         shape = new btBoxShape(
-                new Vector3(GroundBlockModel.WIDTH / 2, GroundBlockModel.HEIGHT / 2, DEPTH / 2));
+                new Vector3(GroundBlockModel.WIDTH / 2,
+                        GroundBlockModel.HEIGHT / 2,
+                        GroundBlockModel.UNIT / 2));
         if (mass > 0f) {
             shape.calculateLocalInertia(mass, localInertia);
         } else {

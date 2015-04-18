@@ -4,11 +4,14 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 
+import cc.clv.BlueRobe.assets.AssetMaster;
 import cc.clv.BlueRobe.engine.Item;
 
 public class ItemModelInstance extends ModelInstance implements AnimatableModelInstance {
 
+    @lombok.Getter
     private final Item item;
+
     private final AnimationController animationController;
 
     public ItemModelInstance(Item item, Model model) {
@@ -25,7 +28,7 @@ public class ItemModelInstance extends ModelInstance implements AnimatableModelI
     }
 
     public static ItemModelInstance create(Item item) {
-        Model model = AssetLoader.getInstance().getItemModel();
+        Model model = AssetMaster.getModelLoader().getItemModel();
         return new ItemModelInstance(item, model);
     }
 
