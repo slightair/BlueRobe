@@ -32,7 +32,7 @@ public class GroundBlockModel extends Model {
                 createDebugBlock(Color.LIGHT_GRAY);
                 break;
             case Grass:
-                createDebugBlock(new Color(0x88ff60ff));
+                createGrassBlock();
                 break;
             default:
                 createDebugBlock(Color.DARK_GRAY);
@@ -54,5 +54,31 @@ public class GroundBlockModel extends Model {
         meshBuilder.end();
 
         nodes.add(node);
+    }
+
+    private void createGrassBlock() {
+        Color color1 = new Color(0x99ff70ff);
+        Color color2 = new Color(0xaaff80ff);
+
+        Material material1 = new Material(ColorAttribute.createDiffuse(color1));
+        Material material2 = new Material(ColorAttribute.createDiffuse(color2));
+
+        MeshBuilder meshBuilder = new MeshBuilder();
+        float zBase = -DEPTH / 2 + UNIT / 2;
+        for (int i = 0; i < 10; i++) {
+            Material material = i % 2 == 0 ? material1 : material2;
+
+            meshBuilder.begin(VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+
+            Node node = new Node();
+            node.id = "line-" + i;
+            node.parts.add(new NodePart(meshBuilder.part("base", GL20.GL_TRIANGLES), material));
+
+            meshBuilder.box(0, 0, zBase + UNIT * i, WIDTH, HEIGHT, UNIT);
+
+            meshBuilder.end();
+
+            nodes.add(node);
+        }
     }
 }
