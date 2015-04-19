@@ -40,7 +40,9 @@ public class PhantomGround {
                 .box(GroundBlockModel.WIDTH, GroundBlockModel.HEIGHT, GroundBlockModel.UNIT);
         Model model = mb.end();
         modelInstance = new ModelInstance(model);
-        modelInstance.transform.translate(0f, -GroundBlockModel.HEIGHT / 2, 80f);
+        modelInstance.transform.translate(0f,
+                -GroundBlockModel.HEIGHT / 2,
+                GroundBlockModel.DEPTH / 2 - GroundBlockModel.UNIT / 2);
     }
 
     private void createPhysicsBody() {

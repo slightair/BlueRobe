@@ -61,7 +61,7 @@ public class CharacterModelInstance extends ModelInstance implements AnimatableM
         super(model);
 
         this.character = character;
-        transform.translate(0f, 32f, 80f);
+        transform.translate(0f, 32f, GroundBlockModel.DEPTH / 2 - GroundBlockModel.UNIT / 2);
         transform.rotate(new Vector3(0f, 1f, 0f), 180);
 
         character.getActions().subscribe(new Action1<Character.Action>() {
