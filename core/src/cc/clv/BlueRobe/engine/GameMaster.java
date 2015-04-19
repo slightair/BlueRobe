@@ -16,7 +16,7 @@ public class GameMaster {
         GROUND_SPAWN_NEW_BLOCK,
     }
 
-    public static final float GROUND_BLOCK_SPAWN_INTERVAL = 1f;
+    public static final float GROUND_BLOCK_SPAWN_INTERVAL = 1.4f;
 
     private final Observable<Action> input;
 
