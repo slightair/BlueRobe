@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cc.clv.BlueRobe.engine.GroundBlock;
-import cc.clv.BlueRobe.engine.Item;
+import cc.clv.BlueRobe.engine.Object;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -16,13 +16,21 @@ public class GroundDivision {
     private GroundBlockModelInstance blockModelInstance;
 
     @lombok.Getter
+    private ArrayList<ObjectModelInstance> objectModelInstances;
+
+    @lombok.Getter
     private ArrayList<ItemModelInstance> itemModelInstances;
 
     public GroundDivision(GroundBlock groundBlock) {
         blockModelInstance = GroundBlockModelInstance.create(groundBlock);
+        objectModelInstances = new ArrayList<ObjectModelInstance>();
         itemModelInstances = new ArrayList<ItemModelInstance>();
 
-        for (Item item : groundBlock.getItems()) {
+        for (Object object : groundBlock.getObjects()) {
+            objectModelInstances.add(ObjectModelInstance.create(object));
+        }
+
+        for (Object item : groundBlock.getItems()) {
             itemModelInstances.add(ItemModelInstance.create(item));
         }
     }
@@ -31,6 +39,7 @@ public class GroundDivision {
         ArrayList<ModelInstance> instances = new ArrayList<ModelInstance>();
 
         instances.add(blockModelInstance);
+        instances.addAll(objectModelInstances);
         instances.addAll(itemModelInstances);
 
         return instances;

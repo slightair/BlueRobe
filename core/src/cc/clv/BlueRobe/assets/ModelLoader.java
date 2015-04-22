@@ -16,6 +16,11 @@ public class ModelLoader implements Loader {
         this.assetManager = assetManager;
     }
 
+    private static final String[] OBJECT_NAMES = {
+            "mushroom",
+            "grass"
+    };
+
     @Override
     public void load() {
         assetManager.load("models/hikari.g3db", Model.class);
@@ -25,7 +30,7 @@ public class ModelLoader implements Loader {
     @Override
     public void complete() {
         setUpCharacterModel();
-        setUpItemModel();
+        setUpObjectModel();
     }
 
     private void setUpCharacterModel() {
@@ -36,18 +41,20 @@ public class ModelLoader implements Loader {
         model.animations.add(new ReturnShrinkAnimation(node));
     }
 
-    private void setUpItemModel() {
-        Model model = getItemModel();
+    private void setUpObjectModel() {
+        Model model = getObjectModel();
 
-        Node node = model.getNode("mushroom");
-        model.animations.add(new StretchAnimation(node));
+        for (String objectName : OBJECT_NAMES) {
+            Node node = model.getNode(objectName);
+            model.animations.add(new StretchAnimation(node));
+        }
     }
 
     public Model getCharacterModel() {
         return assetManager.get("models/hikari.g3db", Model.class);
     }
 
-    public Model getItemModel() {
+    public Model getObjectModel() {
         return assetManager.get("models/items.g3db", Model.class);
     }
 }

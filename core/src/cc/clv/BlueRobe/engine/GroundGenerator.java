@@ -1,5 +1,6 @@
 package cc.clv.BlueRobe.engine;
 
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
@@ -41,18 +42,38 @@ public class GroundGenerator {
         GroundBlock.Type type = GroundBlock.Type
                 .valueOf(stageMap.getProperties().get("baseGroundType", String.class));
 
-        TiledMapTileLayer itemsLayer = (TiledMapTileLayer) stageMap.getLayers().get("items");
+        MapLayers layers = stageMap.getLayers();
+        TiledMapTileLayer objectsLayer = (TiledMapTileLayer) layers.get("objects");
+        TiledMapTileLayer itemsLayer = (TiledMapTileLayer) layers.get("items");
+        TiledMapTileLayer obstaclesLayer = (TiledMapTileLayer) layers.get("obstacles");
 
-        ArrayList<Item> items = new ArrayList<Item>();
+        ArrayList<Object> objects = new ArrayList<Object>();
+        ArrayList<Object> items = new ArrayList<Object>();
+        ArrayList<Object> obstacles = new ArrayList<Object>();
         int firstLine = currentBlockIndex * GroundBlock.NUM_VERTICAL_CELLS % itemsLayer.getHeight();
         for (int y = 0; y < GroundBlock.NUM_VERTICAL_CELLS; y++) {
             for (int x = 0; x < itemsLayer.getWidth(); x++) {
-                TiledMapTileLayer.Cell cell = itemsLayer.getCell(x, firstLine + y);
+                TiledMapTileLayer.Cell cell;
 
+                cell = objectsLayer.getCell(x, firstLine + y);
                 if (cell != null) {
                     String itemName = cell.getTile().getProperties().get("name", String.class);
-                    Item item = new Item(itemName, x, y);
+                    Object item = new Object(itemName, x, y);
+                    objects.add(item);
+                }
+
+                cell = itemsLayer.getCell(x, firstLine + y);
+                if (cell != null) {
+                    String itemName = cell.getTile().getProperties().get("name", String.class);
+                    Object item = new Object(itemName, x, y);
                     items.add(item);
+                }
+
+                cell = obstaclesLayer.getCell(x, firstLine + y);
+                if (cell != null) {
+                    String itemName = cell.getTile().getProperties().get("name", String.class);
+                    Object item = new Object(itemName, x, y);
+                    obstacles.add(item);
                 }
             }
         }
@@ -60,7 +81,9 @@ public class GroundGenerator {
         GroundBlock block = GroundBlock.builder()
                 .index(currentBlockIndex)
                 .type(type)
+                .objects(objects)
                 .items(items)
+                .obstacles(obstacles)
                 .build();
         currentBlockIndex++;
 

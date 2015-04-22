@@ -10,7 +10,7 @@ import java.util.List;
 import cc.clv.BlueRobe.engine.GameMaster;
 import cc.clv.BlueRobe.engine.Ground;
 import cc.clv.BlueRobe.engine.GroundBlock;
-import cc.clv.BlueRobe.engine.Item;
+import cc.clv.BlueRobe.engine.Object;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -130,8 +130,18 @@ public class GroundLayouter {
 
             float baseX = x - (GroundBlockModel.WIDTH - GroundBlockModel.UNIT) / 2;
             float baseZ = z + (GroundBlockModel.DEPTH - GroundBlockModel.UNIT) / 2;
+
+            for (ObjectModelInstance objectModelInstance : division.getObjectModelInstances()) {
+                Object object = objectModelInstance.getObject();
+                Vector3 position = new Vector3(
+                        baseX + object.getPositionX() * GroundBlockModel.UNIT,
+                        0,
+                        baseZ - object.getPositionY() * GroundBlockModel.UNIT);
+                objectModelInstance.transform.translate(position);
+            }
+
             for (ItemModelInstance itemModelInstance : division.getItemModelInstances()) {
-                Item item = itemModelInstance.getItem();
+                Object item = itemModelInstance.getObject();
                 Vector3 position = new Vector3(
                         baseX + item.getPositionX() * GroundBlockModel.UNIT,
                         0,

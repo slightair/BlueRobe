@@ -16,5 +16,7 @@ public class GroundBlock {
 
     Type type;
     int index;
-    ArrayList<Item> items;
+    ArrayList<Object> objects;
+    ArrayList<Object> items;
+    ArrayList<Object> obstacles;
 }

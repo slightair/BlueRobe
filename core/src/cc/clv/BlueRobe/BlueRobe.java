@@ -2,6 +2,7 @@ package cc.clv.BlueRobe;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -23,6 +24,8 @@ public class BlueRobe extends ApplicationAdapter {
     private ModelBatch modelBatch;
     private ModelBatch shadowBatch;
     private GameSceneDirector sceneDirector;
+
+    FPSLogger fpsLogger = new FPSLogger();
 
     private void setUpEnvironment() {
         environment = new Environment();
@@ -87,6 +90,8 @@ public class BlueRobe extends ApplicationAdapter {
 
         renderModelShadows();
         renderModels();
+
+        fpsLogger.log();
     }
 
     @Override

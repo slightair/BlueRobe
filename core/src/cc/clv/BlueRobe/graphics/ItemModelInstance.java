@@ -1,39 +1,18 @@
 package cc.clv.BlueRobe.graphics;
 
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 
 import cc.clv.BlueRobe.assets.AssetMaster;
-import cc.clv.BlueRobe.engine.Item;
+import cc.clv.BlueRobe.engine.Object;
 
-public class ItemModelInstance extends ModelInstance implements AnimatableModelInstance {
+public class ItemModelInstance extends ObjectModelInstance {
 
-    @lombok.Getter
-    private final Item item;
-
-    private final AnimationController animationController;
-
-    public ItemModelInstance(Item item, Model model) {
-        super(model, item.getName());
-
-        this.item = item;
-
-        animationController = new AnimationController(this);
-        setUpAnimation();
+    public ItemModelInstance(Object object, Model model) {
+        super(object, model);
     }
 
-    private void setUpAnimation() {
-        animationController.setAnimation("stretch", -1);
-    }
-
-    public static ItemModelInstance create(Item item) {
-        Model model = AssetMaster.getModelLoader().getItemModel();
-        return new ItemModelInstance(item, model);
-    }
-
-    @Override
-    public void updateAnimation(float deltaTime) {
-        animationController.update(deltaTime);
+    public static ItemModelInstance create(Object object) {
+        Model model = AssetMaster.getModelLoader().getObjectModel();
+        return new ItemModelInstance(object, model);
     }
 }
