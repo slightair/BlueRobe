@@ -3,26 +3,19 @@ using System.Collections;
 
 public class CharacterControl : MonoBehaviour {
 
-	private Vector3 moveDirection = Vector3.zero;
-	private CharacterController controller;
-	private float gravity = 20f;
+	private Rigidbody rigidBody;
 
 	// Use this for initialization
 	void Start () {
-		controller = GetComponent<CharacterController>();
-		moveDirection.x = -10f;
+		rigidBody = GetComponent<Rigidbody> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (controller.isGrounded) {
-			if (Input.GetButton ("Jump")) {
-				moveDirection.y = 10f;
+		if (Input.GetMouseButtonUp(0)) {
+			if (transform.position.y < 0) {
+				rigidBody.AddForce(Vector3.up * 5, ForceMode.VelocityChange);
 			}
 		}
-
-		moveDirection.y -= gravity * Time.deltaTime;
-
-		controller.Move (moveDirection * Time.deltaTime);
 	}
 }
