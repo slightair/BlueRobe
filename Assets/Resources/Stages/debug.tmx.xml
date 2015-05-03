@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="11" height="100" tilewidth="16" tileheight="16" backgroundcolor="#808080" nextobjectid="4">
+ <properties>
+  <property name="baseGroundType" value="Grass"/>
+ </properties>
+ <tileset firstgid="1" name="items" tilewidth="16" tileheight="16">
+  <tile id="0">
+   <properties>
+    <property name="name" value="mushroom"/>
+   </properties>
+   <image width="16" height="16" source="twemoji/1f344.png"/>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="name" value="grass"/>
+   </properties>
+   <image width="16" height="16" source="twemoji/1f331.png"/>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="name" value="tree"/>
+   </properties>
+   <image width="16" height="16" source="twemoji/1f333.png"/>
+  </tile>
+ </tileset>
+ <layer name="objects" width="11" height="100">
+  <data encoding="base64" compression="zlib">
+   eJy9l0EKwDAIBEv//+geeglidFZNhNJiVk3ErPZ5fnnN235Humw9s7FYxYe3726sLnZnfwKv5EvNbWSj+PBwnVx2JKsjq4vyFd0Vcs5qDqo+6VlU8c5u/UZ1ZPOonGGi/r01D0t13h4yXlVxFkPuaeUuK3x/otZX+2munt5vt0fQGBPYHV95uEn+r8pE/ey+12cyvtoTKzrim3LUVOwbd13lxtNCZyi6p4jXSb0S3xRLa0fhEKUeMyH12snVzb5D7UjfJXPqzj/BZ0LmY09XmZvIOsWe5JapHjM5r1N/1dmUSvf/4Mac8gHjfAFt
+  </data>
+ </layer>
+ <layer name="items" width="11" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt0cEJACAMxdC6/9Iu4OELpTSQB16kVCRV2uQER/vYjMlmTDZjshmTzZhsxmQzps5m6a7XXHrX/W733MQ/flwKygA5
+  </data>
+ </layer>
+ <layer name="obstacles" width="11" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztyrEJAAAMw7BC/v+5Sw7oXGTwpsytdJZlWZZlWZZlWZZl2e92ATtMAlk=
+  </data>
+ </layer>
+</map>
