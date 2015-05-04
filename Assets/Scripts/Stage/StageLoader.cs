@@ -13,6 +13,7 @@ namespace BlueRobe.Stage
         {
             map = LoadMap("debug");
 
+            ChangePlaneColor();
             ArrangeObjects();
         }
 
@@ -29,6 +30,24 @@ namespace BlueRobe.Stage
             document.Load(new StringReader(stageXmlAsset.text));
 
             return new Map(document.DocumentElement);
+        }
+
+        private void ChangePlaneColor()
+        {
+            GameObject plane = GameObject.Find("Plane");
+            Renderer renderer = plane.GetComponent("Renderer") as Renderer;
+
+            Color color;
+            switch (map.groundType)
+            {
+                case Map.GroundType.Grass:
+                    color = new Color(0.6f, 1.0f, 0.3f, 1.0f);
+                    break;
+                default:
+                    color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+                    break;
+            }
+            renderer.material.color = color;
         }
 
         private void ArrangeObjects()
