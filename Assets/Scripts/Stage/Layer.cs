@@ -25,21 +25,11 @@ namespace BlueRobe.Stage
 
         private void ParseData(XmlNode node)
         {
+            // assume CSV
             string dataString = node.SelectSingleNode("data").InnerText;
-            MemoryStream decodedDataStream = new MemoryStream(Convert.FromBase64String(dataString));
-
-            // drop 2 bytes - http://blogs.msdn.com/b/bclteam/archive/2007/05/16/system-io-compression-capabilities-kim-hamilton.aspx
-            decodedDataStream.ReadByte();
-            decodedDataStream.ReadByte();
-
-            DeflateStream decompStream = new DeflateStream(decodedDataStream, CompressionMode.Decompress);
-            BinaryReader reader = new BinaryReader(decompStream);
-
-            tileIdList = new List<UInt32>();
-            for (int i = 0; i < width * height; i++)
-            {
-                tileIdList.Add(reader.ReadUInt32());
-            }
+            tileIdList = new List<UInt32>(dataString.Split(',')
+                .Select(t => UInt32.Parse(t))
+                .ToList());
             tileIdList.AsReadOnly();
         }
 
