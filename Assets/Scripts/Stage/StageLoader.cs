@@ -48,6 +48,10 @@ namespace BlueRobe.Stage
                     break;
             }
             renderer.material.color = color;
+
+            GameObject runDust = GameObject.Find("RunDust");
+            Renderer dustRenderer = runDust.GetComponent("Renderer") as Renderer;
+            dustRenderer.material.color = color;
         }
 
         private void ArrangeObjects()
