@@ -25,7 +25,8 @@ public class CharacterControl : MonoBehaviour
         move = transform.position;
         move += transform.forward * ForwardSpeed;
 
-        processTouches();
+        ProcessTouches();
+        ProcessKeys();
 
         rigidBody.MovePosition(move);
     }
@@ -36,44 +37,76 @@ public class CharacterControl : MonoBehaviour
         return transform.position.y < 1;
     }
 
-    private void processTouches()
+    private void ProcessTouches()
     {
         if (Input.touchCount == 0)
         {
             return;
         }
 
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-
         Touch touch = Input.GetTouch(0);
         if (touch.phase == TouchPhase.Began)
         {
-            isJumpCancelled = false;
-            if (isGrounded() && stateInfo.IsName("Hikari.Run"))
-            {
-                animator.SetBool("PrepareJump", true);
-            }
+            PrepareJump();
         }
         else if (touch.phase == TouchPhase.Moved)
         {
-            isJumpCancelled = true;
-            float deltaX = touch.deltaPosition.x;
-            if (deltaX != 0)
-            {
-                if (stateInfo.IsName("Hikari.PrepareJump"))
-                {
-                    animator.SetBool("PrepareJump", false);
-                }
-                move += transform.right * Mathf.Clamp(deltaX * MoveRatio, -MoveMax, MoveMax);
-            }
+            Move(touch.deltaPosition.x);
         }
         else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
         {
-            animator.SetBool("PrepareJump", false);
-            if (isGrounded() && !isJumpCancelled)
+            Jump();
+        }
+    }
+
+    private void ProcessKeys()
+    {
+        if (Input.GetKeyDown("space"))
+        {
+            PrepareJump();
+        }
+        else if (Input.GetKeyUp("space"))
+        {
+            Jump();
+        }
+
+        float deltaX = Input.GetAxisRaw("Horizontal") * 5;
+        if (deltaX != 0)
+        {
+            Move(deltaX);
+        }
+    }
+
+    private void PrepareJump()
+    {
+        isJumpCancelled = false;
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (isGrounded() && stateInfo.IsName("Hikari.Run"))
+        {
+            animator.SetBool("PrepareJump", true);
+        }
+    }
+
+    private void Move(float deltaX)
+    {
+        isJumpCancelled = true;
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (deltaX != 0)
+        {
+            if (stateInfo.IsName("Hikari.PrepareJump"))
             {
-                rigidBody.AddForce(Vector3.up * JumpPower, ForceMode.VelocityChange);
+                animator.SetBool("PrepareJump", false);
             }
+            move += transform.right * Mathf.Clamp(deltaX * MoveRatio, -MoveMax, MoveMax);
+        }
+    }
+
+    private void Jump()
+    {
+        animator.SetBool("PrepareJump", false);
+        if (isGrounded() && !isJumpCancelled)
+        {
+            rigidBody.AddForce(Vector3.up * JumpPower, ForceMode.VelocityChange);
         }
     }
 }
