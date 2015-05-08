@@ -1,22 +1,40 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class CharacterControl : MonoBehaviour {
+public class CharacterControl : MonoBehaviour
+{
+    private Rigidbody rigidBody;
+    private Animator animator;
 
-	private Rigidbody rigidBody;
-
-	// Use this for initialization
-	void Start () {
-		rigidBody = GetComponent<Rigidbody> ();
-	}
+    // Use this for initialization
+    void Start()
+    {
+        rigidBody = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(0)) {
-			if (transform.position.y < 0) {
-				rigidBody.AddForce(Vector3.up * 10, ForceMode.VelocityChange);
-			}
-		}
-	}
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (isGrounded() && stateInfo.IsName("Hikari.Run"))
+            {
+                animator.SetBool("PrepareJump", true);
+            }
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            if (isGrounded())
+            {
+                animator.SetBool("PrepareJump", false);
+                rigidBody.AddForce(Vector3.up * 10, ForceMode.VelocityChange);
+            }
+        }
+    }
+
+    private bool isGrounded()
+    {
+        return transform.position.y < 1;
+    }
 }
