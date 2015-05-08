@@ -2,9 +2,15 @@
 
 public class CharacterControl : MonoBehaviour
 {
+    private static float MoveRatio = 0.05f;
+    private static float MoveMax = 0.8f;
+    private static float JumpPower = 10f;
+    private static float ForwardSpeed = 0.5f;
+
     private Rigidbody rigidBody;
     private Animator animator;
     private bool isJumpCancelled;
+    private Vector3 move;
 
     // Use this for initialization
     void Start()
@@ -14,17 +20,19 @@ public class CharacterControl : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        move = transform.position;
+        move += transform.forward * ForwardSpeed;
+
         processTouches();
 
-//         Vector3 newPosition = transform.position;
-//         newPosition.x -= 0.5f;
-//         transform.position = newPosition;
+        rigidBody.MovePosition(move);
     }
 
     private bool isGrounded()
     {
+        // TODO
         return transform.position.y < 1;
     }
 
@@ -56,10 +64,7 @@ public class CharacterControl : MonoBehaviour
                 {
                     animator.SetBool("PrepareJump", false);
                 }
-
-                Vector3 newPosition = transform.position;
-                newPosition.z += deltaX * 0.05f;
-                transform.position = newPosition;
+                move += transform.right * Mathf.Clamp(deltaX * MoveRatio, -MoveMax, MoveMax);
             }
         }
         else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
@@ -67,7 +72,7 @@ public class CharacterControl : MonoBehaviour
             animator.SetBool("PrepareJump", false);
             if (isGrounded() && !isJumpCancelled)
             {
-                rigidBody.AddForce(Vector3.up * 10, ForceMode.VelocityChange);
+                rigidBody.AddForce(Vector3.up * JumpPower, ForceMode.VelocityChange);
             }
         }
     }
