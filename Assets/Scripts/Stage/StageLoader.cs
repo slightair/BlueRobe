@@ -13,7 +13,7 @@ namespace BlueRobe.Stage
         {
             map = LoadMap("debug");
 
-            ChangePlaneColor();
+            ChangePlaneColorAndSize();
             ArrangeObjects();
         }
 
@@ -32,22 +32,28 @@ namespace BlueRobe.Stage
             return new Map(document.DocumentElement);
         }
 
-        private void ChangePlaneColor()
+        private void ChangePlaneColorAndSize()
         {
             GameObject plane = GameObject.Find("Plane");
-            Renderer renderer = plane.GetComponent("Renderer") as Renderer;
+            Renderer planeRenderer = plane.GetComponent("Renderer") as Renderer;
 
             Color color;
             switch (map.groundType)
             {
                 case Map.GroundType.Grass:
-                    color = new Color(0.6f, 1.0f, 0.3f, 1.0f);
+                    color = new Color(0.57f, 0.87f, 0.26f, 1.0f);
                     break;
                 default:
                     color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
                     break;
             }
-            renderer.material.color = color;
+            planeRenderer.material.color = color;
+
+            float planeMargin = 10 * 2;
+            float planeDepth = map.height * 2 + planeMargin * 2;
+
+            plane.transform.position = new Vector3(-planeDepth / 2 + planeMargin, -1f, 0f);
+            plane.transform.localScale = new Vector3(planeDepth, 2f, 34f);
 
             GameObject runDust = GameObject.Find("RunDust");
             Renderer dustRenderer = runDust.GetComponent("Renderer") as Renderer;
