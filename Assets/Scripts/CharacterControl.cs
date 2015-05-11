@@ -4,12 +4,13 @@ public class CharacterControl : MonoBehaviour
 {
     private static float MoveRatio = 0.05f;
     private static float MoveMax = 0.8f;
-    private static float JumpPower = 10f;
+    private static float JumpPower = 100f;
     private static float ForwardSpeed = 0.5f;
 
     private Rigidbody rigidBody;
     private Animator animator;
     private bool isJumpCancelled;
+    private bool isGrounded;
     private Vector3 move;
 
     // Use this for initialization
@@ -31,10 +32,28 @@ public class CharacterControl : MonoBehaviour
         rigidBody.MovePosition(move);
     }
 
-    private bool isGrounded()
+    void OnCollisionEnter(Collision collision)
     {
-        // TODO
-        return transform.position.y < 1;
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
+    }
+
+    void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.CompareTag("Over"))
+        {
+            Debug.Log("Over");
+        }
     }
 
     private void ProcessTouches()
@@ -81,7 +100,7 @@ public class CharacterControl : MonoBehaviour
     {
         isJumpCancelled = false;
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        if (isGrounded() && stateInfo.IsName("Hikari.Run"))
+        if (isGrounded && stateInfo.IsName("Hikari.Run"))
         {
             animator.SetBool("PrepareJump", true);
         }
@@ -104,9 +123,9 @@ public class CharacterControl : MonoBehaviour
     private void Jump()
     {
         animator.SetBool("PrepareJump", false);
-        if (isGrounded() && !isJumpCancelled)
+        if (isGrounded && !isJumpCancelled)
         {
-            rigidBody.AddForce(Vector3.up * JumpPower, ForceMode.VelocityChange);
+            rigidBody.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
         }
     }
 }
