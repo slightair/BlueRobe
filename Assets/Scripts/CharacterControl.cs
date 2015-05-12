@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
+using BlueRobe.Scene;
 
 public class CharacterControl : MonoBehaviour
 {
+    public ActionStageSceneController sceneController;
+
     private static float MoveRatio = 0.05f;
     private static float MoveMax = 0.8f;
     private static float JumpPower = 100f;
@@ -52,7 +55,7 @@ public class CharacterControl : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Over"))
         {
-            Debug.Log("Over");
+            sceneController.OnGameOver();
         }
     }
 
