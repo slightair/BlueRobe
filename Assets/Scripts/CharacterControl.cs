@@ -14,6 +14,7 @@ public class CharacterControl : MonoBehaviour
     private Animator animator;
     private bool isJumpCancelled;
     private bool isGrounded;
+    private bool isWallTouched;
     private Vector3 move;
 
     // Use this for initialization
@@ -41,6 +42,10 @@ public class CharacterControl : MonoBehaviour
         {
             isGrounded = true;
         }
+        else if (collision.gameObject.CompareTag("Wall"))
+        {
+            isWallTouched = true;
+        }
     }
 
     void OnCollisionExit(Collision collision)
@@ -48,6 +53,10 @@ public class CharacterControl : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+        }
+        else if (collision.gameObject.CompareTag("Wall"))
+        {
+            isWallTouched = false;
         }
     }
 
@@ -111,6 +120,11 @@ public class CharacterControl : MonoBehaviour
 
     private void Move(float deltaX)
     {
+        if (isWallTouched && transform.position.z * deltaX > 0)
+        {
+            return;
+        }
+
         isJumpCancelled = true;
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (deltaX != 0)
