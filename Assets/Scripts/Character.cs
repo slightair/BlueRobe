@@ -42,6 +42,7 @@ public class Character : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            animator.SetBool("isGrounded", true);
         }
         else if (collision.gameObject.CompareTag("Wall"))
         {
@@ -54,6 +55,7 @@ public class Character : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            animator.SetBool("isGrounded", false);
         }
         else if (collision.gameObject.CompareTag("Wall"))
         {
@@ -141,12 +143,8 @@ public class Character : MonoBehaviour
 
     private void PrepareJump()
     {
+        animator.SetBool("PrepareJump", true);
         isJumpCancelled = false;
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        if (isGrounded && stateInfo.IsName("Hikari.Run"))
-        {
-            animator.SetBool("PrepareJump", true);
-        }
     }
 
     private void Move(float deltaX)
@@ -157,13 +155,10 @@ public class Character : MonoBehaviour
         }
 
         isJumpCancelled = true;
+        animator.SetBool("PrepareJump", false);
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (deltaX != 0)
         {
-            if (stateInfo.IsName("Hikari.PrepareJump"))
-            {
-                animator.SetBool("PrepareJump", false);
-            }
             move += transform.right * Mathf.Clamp(deltaX * MoveRatio, -MoveMax, MoveMax);
         }
     }
