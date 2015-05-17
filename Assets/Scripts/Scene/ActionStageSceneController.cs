@@ -14,6 +14,11 @@ namespace BlueRobe.Scene
 
         }
 
+        public void OnStageClear()
+        {
+
+        }
+
         public void OnGameOver()
         {
             SceneManager.Instance.SwitchScene("Title");

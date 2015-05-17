@@ -35,6 +35,7 @@ namespace BlueRobe.Stage
         private void ChangePlaneColorAndSize()
         {
             GameObject plane = GameObject.Find("Plane");
+            GameObject stopper = GameObject.Find("Stopper");
             Renderer planeRenderer = plane.GetComponent("Renderer") as Renderer;
 
             Color color;
@@ -50,14 +51,12 @@ namespace BlueRobe.Stage
             planeRenderer.material.color = color;
 
             float planeMargin = 10 * 2;
-            float planeDepth = map.height * 2 + planeMargin * 2;
+            float planeDepth = map.height * 2 + planeMargin * 3;
 
             plane.transform.position = new Vector3(-planeDepth / 2 + planeMargin, -1f, 0f);
             plane.transform.localScale = new Vector3(planeDepth, 2f, 34f);
 
-            GameObject runDust = GameObject.Find("RunDust");
-            Renderer dustRenderer = runDust.GetComponent("Renderer") as Renderer;
-            dustRenderer.material.color = color;
+            stopper.transform.position = new Vector3(-planeDepth + planeMargin, 10f, 0f);
         }
 
         private void ArrangeObjects()
@@ -71,7 +70,7 @@ namespace BlueRobe.Stage
                     if (tile != null)
                     {
                         GameObject itemPrefab = (GameObject)Resources.Load("Objects/" + tile.name);
-                        Vector3 position = new Vector3(1 - y * 2, 0, -10 + x * 2);
+                        Vector3 position = new Vector3(-1 - y * 2, 0, -10 + x * 2);
                         Instantiate(itemPrefab, position, Quaternion.identity);
                     }
 
@@ -79,7 +78,7 @@ namespace BlueRobe.Stage
                     if (tile != null)
                     {
                         GameObject objectPrefab = (GameObject)Resources.Load("Objects/" + tile.name);
-                        Vector3 position = new Vector3(1 - y * 2, 0, -10 + x * 2);
+                        Vector3 position = new Vector3(-1 - y * 2, 0, -10 + x * 2);
                         Instantiate(objectPrefab, position, Quaternion.identity);
                     }
 
@@ -87,7 +86,7 @@ namespace BlueRobe.Stage
                     if (tile != null)
                     {
                         GameObject obstaclePrefab = (GameObject)Resources.Load("Objects/" + tile.name);
-                        Vector3 position = new Vector3(1 - y * 2, 0, -10 + x * 2);
+                        Vector3 position = new Vector3(-1 - y * 2, 0, -10 + x * 2);
                         Instantiate(obstaclePrefab, position, Quaternion.identity);
                     }
                 }

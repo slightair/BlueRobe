@@ -15,6 +15,7 @@ public class CharacterControl : MonoBehaviour
     private bool isJumpCancelled;
     private bool isGrounded;
     private bool isWallTouched;
+    private bool isFinished;
     private Vector3 move;
 
     // Use this for initialization
@@ -28,7 +29,10 @@ public class CharacterControl : MonoBehaviour
     void FixedUpdate()
     {
         move = transform.position;
-        move += transform.forward * ForwardSpeed;
+        if (!isFinished)
+        {
+            move += transform.forward * ForwardSpeed;
+        }
 
         ProcessTouches();
         ProcessKeys();
@@ -62,10 +66,40 @@ public class CharacterControl : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.CompareTag("Over"))
+        if (collider.gameObject.CompareTag("Finish"))
         {
+            StopMoving();
+            sceneController.OnStageClear();
+        }
+        else if (collider.gameObject.CompareTag("Over"))
+        {
+            StopMoving();
             sceneController.OnGameOver();
         }
+    }
+
+    public void StartMoving()
+    {
+        animator.SetBool("isRunning", true);
+
+        GameObject plane = GameObject.Find("Plane");
+        GameObject runDust = GameObject.Find("RunDust");
+        Renderer planeRenderer = plane.GetComponent("Renderer") as Renderer;
+        Renderer dustRenderer = runDust.GetComponent("Renderer") as Renderer;
+        dustRenderer.material.color = planeRenderer.material.color;
+
+        ParticleSystem runDustParticleSystem = runDust.GetComponent("ParticleSystem") as ParticleSystem;
+        runDustParticleSystem.Play();
+    }
+
+    public void StopMoving()
+    {
+        isFinished = true;
+        animator.SetBool("isRunning", false);
+
+        GameObject runDust = GameObject.Find("RunDust");
+        ParticleSystem runDustParticleSystem = runDust.GetComponent("ParticleSystem") as ParticleSystem;
+        runDustParticleSystem.Stop();
     }
 
     private void ProcessTouches()
