@@ -1,38 +1,35 @@
 ﻿using UnityEngine;
-using BlueRobe.Scene;
+using UniRx;
 
-public class CharacterControl : MonoBehaviour
+public class Character : MonoBehaviour
 {
-    public ActionStageSceneController sceneController;
-
     private static float MoveRatio = 0.05f;
     private static float MoveMax = 0.8f;
     private static float JumpPower = 100f;
-    private static float ForwardSpeed = 0.5f;
+
+    public bool IsDead { get; private set; }
+    public ReactiveProperty<bool> IsFinished { get; private set; }
 
     private Rigidbody rigidBody;
     private Animator animator;
-    private bool isJumpCancelled;
+    private float forwardSpeed;
     private bool isGrounded;
     private bool isWallTouched;
-    private bool isFinished;
+    private bool isJumpCancelled;
     private Vector3 move;
 
-    // Use this for initialization
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+
+        IsFinished = new ReactiveProperty<bool>(false);
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         move = transform.position;
-        if (!isFinished)
-        {
-            move += transform.forward * ForwardSpeed;
-        }
+        move += transform.forward * forwardSpeed;
 
         ProcessTouches();
         ProcessKeys();
@@ -68,18 +65,18 @@ public class CharacterControl : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Finish"))
         {
-            StopMoving();
-            sceneController.OnStageClear();
+            IsFinished.Value = true;
         }
         else if (collider.gameObject.CompareTag("Over"))
         {
-            StopMoving();
-            sceneController.OnGameOver();
+            IsDead = true;
+            IsFinished.Value = true;
         }
     }
 
     public void StartMoving()
     {
+        forwardSpeed = 0.5f;
         animator.SetBool("isRunning", true);
 
         GameObject plane = GameObject.Find("Plane");
@@ -94,7 +91,7 @@ public class CharacterControl : MonoBehaviour
 
     public void StopMoving()
     {
-        isFinished = true;
+        forwardSpeed = 0f;
         animator.SetBool("isRunning", false);
 
         GameObject runDust = GameObject.Find("RunDust");

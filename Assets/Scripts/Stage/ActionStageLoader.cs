@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace BlueRobe.Stage
 {
-    public class StageLoader : MonoBehaviour
+    public class ActionStageLoader : MonoBehaviour
     {
         private Map map;
 

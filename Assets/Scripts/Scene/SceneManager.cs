@@ -1,7 +1,7 @@
 using UnityEngine;
 using BlueRobe.Utility;
 
-namespace BlueRobe
+namespace BlueRobe.Scene
 {
     public class SceneManager : SingletonMonoBehaviour<SceneManager>
     {

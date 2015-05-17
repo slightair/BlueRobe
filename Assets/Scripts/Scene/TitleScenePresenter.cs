@@ -2,7 +2,7 @@
 
 namespace BlueRobe.Scene
 {
-    public class TitleSceneController : MonoBehaviour
+    public class TitleScenePresenter : MonoBehaviour
     {
         void Start()
         {
