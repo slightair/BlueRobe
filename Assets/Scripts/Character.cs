@@ -5,7 +5,7 @@ public class Character : MonoBehaviour
 {
     private static float MoveRatio = 0.05f;
     private static float MoveMax = 0.8f;
-    private static float JumpPower = 100f;
+    private static float JumpPower = 200f;
 
     public bool IsDead { get; private set; }
     public ReactiveProperty<bool> IsFinished { get; private set; }
