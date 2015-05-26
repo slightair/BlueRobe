@@ -5,7 +5,6 @@ public class Character : MonoBehaviour
 {
     private static float MoveRatio = 0.05f;
     private static float MoveMax = 0.8f;
-    private static float JumpPower = 200f;
 
     public bool IsDead { get; private set; }
     public ReactiveProperty<bool> IsFinished { get; private set; }
@@ -13,9 +12,7 @@ public class Character : MonoBehaviour
     private Rigidbody rigidBody;
     private Animator animator;
     private float forwardSpeed;
-    private bool isGrounded;
     private bool isWallTouched;
-    private bool isJumpCancelled;
     private Vector3 move;
 
     void Start()
@@ -39,12 +36,7 @@ public class Character : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            animator.SetBool("isGrounded", true);
-        }
-        else if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.CompareTag("Wall"))
         {
             isWallTouched = true;
         }
@@ -52,12 +44,7 @@ public class Character : MonoBehaviour
 
     void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-            animator.SetBool("isGrounded", false);
-        }
-        else if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.CompareTag("Wall"))
         {
             isWallTouched = false;
         }
@@ -111,7 +98,7 @@ public class Character : MonoBehaviour
         Touch touch = Input.GetTouch(0);
         if (touch.phase == TouchPhase.Began)
         {
-            PrepareJump();
+
         }
         else if (touch.phase == TouchPhase.Moved)
         {
@@ -119,7 +106,7 @@ public class Character : MonoBehaviour
         }
         else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
         {
-            Jump();
+
         }
     }
 
@@ -127,11 +114,11 @@ public class Character : MonoBehaviour
     {
         if (Input.GetKeyDown("space"))
         {
-            PrepareJump();
+
         }
         else if (Input.GetKeyUp("space"))
         {
-            Jump();
+
         }
 
         float deltaX = Input.GetAxisRaw("Horizontal") * 5;
@@ -141,12 +128,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void PrepareJump()
-    {
-        animator.SetBool("PrepareJump", true);
-        isJumpCancelled = false;
-    }
-
     private void Move(float deltaX)
     {
         if (isWallTouched && transform.position.z * deltaX > 0)
@@ -154,21 +135,9 @@ public class Character : MonoBehaviour
             return;
         }
 
-        isJumpCancelled = true;
-        animator.SetBool("PrepareJump", false);
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (deltaX != 0)
         {
             move += transform.right * Mathf.Clamp(deltaX * MoveRatio, -MoveMax, MoveMax);
-        }
-    }
-
-    private void Jump()
-    {
-        animator.SetBool("PrepareJump", false);
-        if (isGrounded && !isJumpCancelled)
-        {
-            rigidBody.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
         }
     }
 }
