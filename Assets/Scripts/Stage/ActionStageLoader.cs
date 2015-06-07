@@ -69,7 +69,7 @@ namespace BlueRobe.Stage
                     tile = map.GetTile("Items", x, y);
                     if (tile != null)
                     {
-                        GameObject itemPrefab = (GameObject)Resources.Load("Objects/" + tile.name);
+                        GameObject itemPrefab = (GameObject)Resources.Load("Items/" + tile.name);
                         Vector3 position = new Vector3(-1 - y * 2, 0, -10 + x * 2);
                         Instantiate(itemPrefab, position, Quaternion.identity);
                     }
@@ -85,7 +85,7 @@ namespace BlueRobe.Stage
                     tile = map.GetTile("Obstacles", x, y);
                     if (tile != null)
                     {
-                        GameObject obstaclePrefab = (GameObject)Resources.Load("Objects/" + tile.name);
+                        GameObject obstaclePrefab = (GameObject)Resources.Load("Obstacles/" + tile.name);
                         Vector3 position = new Vector3(-1 - y * 2, 0, -10 + x * 2);
                         Instantiate(obstaclePrefab, position, Quaternion.identity);
                     }

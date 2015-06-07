@@ -25,6 +25,11 @@ public class Character : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (IsDead)
+        {
+            return;
+        }
+
         move = transform.position;
         move += transform.forward * forwardSpeed;
 
